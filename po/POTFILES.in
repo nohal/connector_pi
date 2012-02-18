@@ -1,0 +1,4 @@
+src/connector_pi.cpp
+src/connector_pi.h
+src/connectorgui.cpp
+src/connectorgui.h
