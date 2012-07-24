@@ -39,7 +39,7 @@ ConnectorSourceDlg::ConnectorSourceDlg( wxWindow* parent, wxWindowID id, const w
 	m_staticText2->Wrap( -1 );
 	gSizer1->Add( m_staticText2, 0, wxALL, 5 );
 	
-	wxString m_choiceBaudRateChoices[] = { _("4800"), _("9600"), _("38400"), _("115200"), _("230400") };
+	wxString m_choiceBaudRateChoices[] = { _("150"), _("300"), _("600"), _("1200"), _("2400"), _("4800"), _("9600"), _("19200"), _("38400"), _("57600"), _("115200"), _("230400"), _("460800"), _("921600") };
 	int m_choiceBaudRateNChoices = sizeof( m_choiceBaudRateChoices ) / sizeof( wxString );
 	m_choiceBaudRate = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_choiceBaudRateNChoices, m_choiceBaudRateChoices, 0 );
 	m_choiceBaudRate->SetSelection( 0 );

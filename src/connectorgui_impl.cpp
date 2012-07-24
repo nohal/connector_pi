@@ -105,7 +105,7 @@ void ConnectorSourceDlgImpl::SetConnectionParams(ConnectionParams *cp)
         m_rbOIgnore->SetValue(true);
     m_tcInputStc->SetValue(StringArrayToString(cp->InputSentenceList));
     m_tcOutputStc->SetValue(StringArrayToString(cp->OutputSentenceList));
-    m_choiceBaudRate->Select(cp->Baudrate); //TODO
+    m_choiceBaudRate->Select(m_choiceBaudRate->FindString(wxString::Format(_T("%d"),cp->Baudrate)));
     m_choiceSerialProtocol->Select(cp->Protocol); //TODO
     m_choiceDataBits->Select(cp->Wordlen - 8);
     m_choiceParity->Select(cp->Parity);
