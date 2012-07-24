@@ -84,7 +84,7 @@ ConnectionParams::ConnectionParams()
     Port = wxEmptyString;
     Baudrate = 4800;
     Wordlen = 8;
-    Parity = None;
+    Parity = PNone;
     Stopbits = 1;
     RtsCts = false;
     XonXoff = false;

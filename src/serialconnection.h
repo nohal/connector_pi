@@ -66,7 +66,7 @@ typedef enum
 
 typedef enum
 {
-    None = 0,
+    PNone = 0,
     Odd = 1,
     Even = 2,
     Mark = 3,

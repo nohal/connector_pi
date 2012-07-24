@@ -32,7 +32,9 @@
 #include <wx/textdlg.h>
 #include <wx/progdlg.h>
 #include <wx/ctb/serport.h>
+#if defined(__WIN32__)
 #include "enumser.h"
+#endif
 
 wxString StringArrayToString(wxArrayString arr)
 {
