@@ -232,6 +232,8 @@ void connector_pi::ShowPreferencesDialog( wxWindow* parent )
         SaveConfig();
         connectionhandler->CreateConnections(m_pConnectionParams);
     }
+    delete m_pConnectorDialog;
+    m_pConnectorDialog = NULL;
 }
 
 void connector_pi::SetNMEASentence(wxString &sentence, wxString &source)

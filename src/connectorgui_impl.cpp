@@ -127,6 +127,7 @@ void ConnectorCfgDlgImpl::OnAddClick( wxCommandEvent& event )
 {
     ConnectionParams *cp = new ConnectionParams();
     sourcedlg->SetConnectionParams(cp);
+    sourcedlg->Fit();
     if (sourcedlg->ShowModal() == wxID_OK)
         m_pPlugin->m_pConnectionParams->Add(cp);
     FillSourceList();
@@ -135,6 +136,7 @@ void ConnectorCfgDlgImpl::OnAddClick( wxCommandEvent& event )
 void ConnectorCfgDlgImpl::OnEditClick( wxCommandEvent& event )
 {
     sourcedlg->SetConnectionParams(m_pPlugin->m_pConnectionParams->Item(m_lbDatasources->GetSelection()));
+    sourcedlg->Fit();
     sourcedlg->ShowModal();
     FillSourceList();
 }
