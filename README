@@ -1,3 +1,5 @@
-First go to wxctb\build and run buildall script
+How to build:
+- check out the code to the plugins subdir of your source tree
+- cd ../build & cmake .. & build as normally
 
-wxctb for mac is part of http://wxmax.googlecode.com/ - we need to investigate it a little though...
+The Mac port of wxCTB was taken from http://wxmax.googlecode.com/svn/trunk/wx.mod/wxctb.mod/ and is totally untested (I really don't have access to a Mac machine)
