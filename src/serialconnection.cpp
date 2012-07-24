@@ -163,7 +163,7 @@ void ConnectionHandler::CreateConnections(wxArrayOfConnPrm *configs)
 
 void ConnectionHandler::SendNMEAMessage(wxString &message, wxString &source)
 {
-    if (source != wxEmptyString && source != CONNECTOR_PI) //Until we get rid of the current core implementation, accepting these causes an event storm
+    if (source != CONNECTOR_PI) //Until we get rid of the current core implementation, accepting these causes an event storm
         DistributeNMEAMessage(message, source);
 }
 
@@ -251,6 +251,8 @@ bool SerialConnection::FilterOutput(wxString &message, wxString &source)
 {
     if (OutputAllowed)
     {
+        if (OutputFilterList.Count() == 0)
+            return true;
         for (size_t i = 0; i < OutputFilterList.Count(); i++)
             if (OutputFilterList[i] == message.SubString(3,3) || OutputFilterList[i] == message.SubString(1,2) || OutputFilterList[i] == message.SubString(1,5))
                 if (OutputFilterType == BLACKLIST)
@@ -267,7 +269,9 @@ bool SerialConnection::FilterOutput(wxString &message, wxString &source)
 
 bool SerialConnection::FilterInput(wxString &message, wxString &source)
 {
-    for (size_t i = 0; i < OutputFilterList.Count(); i++)
+    if (InputFilterList.Count() == 0)
+            return true;
+    for (size_t i = 0; i < InputFilterList.Count(); i++)
         if (InputFilterList[i] == message.SubString(3,3) || InputFilterList[i] == message.SubString(1,2) || InputFilterList[i] == message.SubString(1,5))
             if (InputFilterType == BLACKLIST)
                 return false;

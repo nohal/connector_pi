@@ -227,11 +227,13 @@ void connector_pi::ShowPreferencesDialog( wxWindow* parent )
     }
     DimeWindow(m_pConnectorDialog);
 
+    connectionhandler->StopTimer();
     if(m_pConnectorDialog->ShowModal() == wxID_OK)
     {
         SaveConfig();
         connectionhandler->CreateConnections(m_pConnectionParams);
     }
+    connectionhandler->StartTimer();
     delete m_pConnectorDialog;
     m_pConnectorDialog = NULL;
 }

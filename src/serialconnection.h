@@ -124,11 +124,13 @@ public:
         p_plugin = plugin;
         busy = false;
         TimerCon.SetOwner(this, TIMER_CONN);
-        TimerCon.Start(100);
+        StartTimer();
     };
     ~ConnectionHandler() {
-        TimerCon.Stop();
+        StopTimer();
     };
+    void            StartTimer() { TimerCon.Start(100); }
+    void            StopTimer() { TimerCon.Stop(); }
     void            CloseAndDestroyAllConnections();
     void            CreateConnections(wxArrayOfConnPrm *configs);
     void            SendNMEAMessage(wxString &message, wxString &source);
