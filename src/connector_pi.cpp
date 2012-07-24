@@ -179,7 +179,6 @@ bool connector_pi::LoadConfig(void)
         wxString connectionconfigs;
         pConf->Read ( _T( "DataConnections" ),  &connectionconfigs, wxEmptyString );
 
-        //TODO: Parse the configs
         wxArrayString confs = wxStringTokenize(connectionconfigs, _T("|"));
         for (size_t i = 0; i < confs.Count(); i++)
         {

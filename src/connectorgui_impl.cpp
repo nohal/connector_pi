@@ -289,20 +289,6 @@ wxArrayString ConnectorSourceDlgImpl::ScanPorts()
 #else
         if (-1 != detectedports.Find(i+1))
             result.Add(wxString::FromUTF8(ports[i]));
-        /*
-        //size_t alloc_len = strlen(ports[i]) + 1;
-        //wchar_t* szComPort = new wchar_t[alloc_len];
-        //size_t res = mbstowcs(szComPort, ports[i], alloc_len);
-
-        TCHAR szDevices[65535];
-        wchar_t* p = new wchar_t[6];
-        wsprintf(p, L"COM%i", i);
-        unsigned long dwChars = QueryDosDevice(p, szDevices, 65535);
-        TCHAR *ptr = szDevices;
-
-        if (dwChars > 0)
-            result.Add(wxString::FromUTF8(ports[i-1])); //TODO: Perhaps filter out what can't be a data source (Like BthModem in HKEY_LOCAL_MACHINE\HARDWARE\DEVICEMAP\SERIALCOMM)
-        */
 #endif
     }
     return result;
