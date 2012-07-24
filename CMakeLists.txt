@@ -22,7 +22,7 @@ MESSAGE (STATUS "*** Building ${PACKAGE_NAME} ***")
 
 #SET(CMAKE_BUILD_TYPE Debug)
 
-INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src ${PLUGIN_SOURCE_DIR}/wxctb/include)
+INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src ${PLUGIN_SOURCE_DIR}/src/wxctb/include)
 
 # require proper c++
 #ADD_DEFINITIONS( "-Wall -ansi -pedantic -Wno-variadic-macros" )
@@ -57,6 +57,46 @@ FIND_PACKAGE(Gettext REQUIRED)
 # For convenience we define the sources as a variable. You can add 
 # header files and cpp/c files and CMake will sort them out
 
+SET(SRC_WXCTB
+            src/wxctb/include/wx/ctb/expect.h
+            src/wxctb/include/wx/ctb/fifo.h
+            src/wxctb/include/wx/ctb/getopt.h
+            src/wxctb/include/wx/ctb/iobase.h
+            src/wxctb/include/wx/ctb/kbhit.h
+            src/wxctb/include/wx/ctb/match.h
+	    src/wxctb/include/wx/ctb/serport.h
+	    src/wxctb/include/wx/ctb/serportx.h
+            src/wxctb/include/wx/ctb/timer.h
+            src/wxctb/src/expect.cpp
+            src/wxctb/src/fifo.cpp
+            src/wxctb/src/getopt.cpp
+	    src/wxctb/src/iobase.cpp
+	    src/wxctb/src/kbhit.cpp
+	    src/wxctb/src/match.cpp
+	)
+
+IF(UNIX AND NOT APPLE)
+SET(SRC_WXCTB_PLATFORM
+	src/wxctb/src/linux/timer.cpp
+	src/wxctb/src/linux/serport.cpp
+	)
+ENDIF(UNIX AND NOT APPLE)
+
+IF(APPLE)
+SET(SRC_WXCTB_PLATFORM
+	)
+ENDIF(APPLE)
+
+IF(WIN32)
+SET(SRC_WXCTB_PLATFORM
+	src/wxctb/src/win32/timer.cpp
+	src/wxctb/src/win32/serport.cpp
+	src/enumser.h
+	src/enumser.cpp
+	src/StdAfx.h
+	)
+ENDIF(WIN32)
+
 SET(SRC_CONNECTOR
             src/connector_pi.h
             src/connector_pi.cpp
@@ -64,10 +104,14 @@ SET(SRC_CONNECTOR
             src/icons.cpp
 	    src/connectorgui.h
 	    src/connectorgui.cpp
+	    src/connectorgui_impl.h
+	    src/connectorgui_impl.cpp
+	    src/serialconnection.h
+	    src/serialconnection.cpp
 	)
-ADD_LIBRARY(${PACKAGE_NAME} SHARED ${SRC_CONNECTOR})
+ADD_LIBRARY(${PACKAGE_NAME} SHARED ${SRC_CONNECTOR} ${SRC_WXCTB} ${SRC_WXCTB_PLATFORM})
 
-TARGET_LINK_LIBRARIES(${PACKAGE_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/wxctb/lib/wxctb-0.9.lib)
+#TARGET_LINK_LIBRARIES(${PACKAGE_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/wxctb/lib/wxctb-0.9.lib)
 
 IF(WIN32)
   SET(OPENCPN_IMPORT_LIB "../../${CMAKE_CFG_INTDIR}/${PARENT}")

@@ -29,6 +29,22 @@
 #define wxCOM14 "\\\\.\\com14"
 #define wxCOM15 "\\\\.\\com15"
 #define wxCOM16 "\\\\.\\com16"
+#define wxCOM17 "\\\\.\\com17"
+#define wxCOM18 "\\\\.\\com18"
+#define wxCOM19 "\\\\.\\com19"
+#define wxCOM20 "\\\\.\\com20"
+#define wxCOM21 "\\\\.\\com21"
+#define wxCOM22 "\\\\.\\com22"
+#define wxCOM23 "\\\\.\\com23"
+#define wxCOM24 "\\\\.\\com24"
+#define wxCOM25 "\\\\.\\com25"
+#define wxCOM26 "\\\\.\\com26"
+#define wxCOM27 "\\\\.\\com27"
+#define wxCOM28 "\\\\.\\com28"
+#define wxCOM29 "\\\\.\\com29"
+#define wxCOM30 "\\\\.\\com30"
+#define wxCOM31 "\\\\.\\com31"
+#define wxCOM32 "\\\\.\\com32"
 
 /*!
    \class wxSerialPort
