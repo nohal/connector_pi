@@ -292,7 +292,8 @@ void SerialConnection::PushBuffer(wxString buf)
         wxString msg = m_buffer.Left(boundary);
         m_buffer.Remove(0, boundary + m_EOS.Length());
         //TODO: honor the CRC if we should
-        m_pHandler->DistributeNMEAMessage(msg, m_portName);
+        if (FilterInput(msg, m_portName))
+            m_pHandler->DistributeNMEAMessage(msg, m_portName);
         boundary = SentenceBoundary();
     }
 }
