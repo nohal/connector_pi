@@ -239,13 +239,11 @@ void connector_pi::ShowPreferencesDialog( wxWindow* parent )
 
 void connector_pi::SetNMEASentence(wxString &sentence, wxString &source)
 {
-    wxLogMessage(_T("CONNECTOR received NMEA: %s : %s"), source.c_str(), sentence.c_str());
     connectionhandler->SendNMEAMessage(sentence, source);
 }
 
 void connector_pi::SetAISSentence(wxString &sentence, wxString &source)
 {
-    wxLogMessage(_T("CONNECTOR received AIS: %s : %s"), source.c_str(), sentence.c_str());
     connectionhandler->SendNMEAMessage(sentence, source);
 }
 
