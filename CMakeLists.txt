@@ -84,6 +84,8 @@ ENDIF(UNIX AND NOT APPLE)
 
 IF(APPLE)
 SET(SRC_WXCTB_PLATFORM
+	src/wxctb/src/macos/timer.cpp
+	src/wxctb/src/macos/serport.cpp
 	)
 ENDIF(APPLE)
 

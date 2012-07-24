@@ -12,6 +12,8 @@
 
 #if defined (WIN32)
 # include "win32/timer.h"
+#elif defined(__APPLE__)
+# include "macos/timer.h"
 #else
 # include "linux/timer.h"
 #endif
