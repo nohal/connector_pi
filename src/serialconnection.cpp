@@ -84,7 +84,7 @@ wxString ConnectionParams::Serialize()
             ostcs.Append(_T(","));
         ostcs.Append(OutputSentenceList[i]);
     }
-    wxString ret = wxString::Format(_T("%d;%d;%s;%d;%d;%s;%d;%d;%d;%d;%d;%d;%d;%d;%d;%d;%s;%d;%s"), Type, NetProtocol, NetworkAddress, NetworkPort, Protocol, Port.c_str(), Baudrate, Wordlen, Parity, Stopbits, RtsCts, XonXoff, EOS, ChecksumCheck, Output, InputSentenceListType, istcs.c_str(), OutputSentenceListType, ostcs.c_str());
+    wxString ret = wxString::Format(_T("%d;%d;%s;%d;%d;%s;%d;%d;%d;%d;%d;%d;%d;%d;%d;%d;%s;%d;%s"), Type, NetProtocol, NetworkAddress.c_str(), NetworkPort, Protocol, Port.c_str(), Baudrate, Wordlen, Parity, Stopbits, RtsCts, XonXoff, EOS, ChecksumCheck, Output, InputSentenceListType, istcs.c_str(), OutputSentenceListType, ostcs.c_str());
 
     return ret;
 }
@@ -345,10 +345,12 @@ bool SerialConnection::FilterOutput(wxString &message, wxString &source)
             return true;
         for (size_t i = 0; i < OutputFilterList.Count(); i++)
             if (OutputFilterList[i] == message.SubString(3,3) || OutputFilterList[i] == message.SubString(1,2) || OutputFilterList[i] == message.SubString(1,5))
+            {
                 if (OutputFilterType == BLACKLIST)
                     return false;
                 else
                     return true;
+            }
         if (OutputFilterType == BLACKLIST)
             return true;
         else
@@ -363,10 +365,12 @@ bool SerialConnection::FilterInput(wxString &message, wxString &source)
             return true;
     for (size_t i = 0; i < InputFilterList.Count(); i++)
         if (InputFilterList[i] == message.SubString(3,3) || InputFilterList[i] == message.SubString(1,2) || InputFilterList[i] == message.SubString(1,5))
+        {
             if (InputFilterType == BLACKLIST)
                 return false;
             else
                 return true;
+        }
     if (InputFilterType == BLACKLIST)
         return true;
     else
