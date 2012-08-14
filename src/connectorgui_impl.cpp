@@ -66,6 +66,12 @@ void ConnectorSourceDlgImpl::FillSourceList()
         m_lcSources->SetItem(itemIndex, 3, m_pPlugin->m_pConnectionParams->Item(i)->GetOutputValueStr());
         m_lcSources->SetItem(itemIndex, 4, m_pPlugin->m_pConnectionParams->Item(i)->GetFiltersStr());
     }
+
+    m_lcSources->SetColumnWidth( 0, wxLIST_AUTOSIZE );
+    m_lcSources->SetColumnWidth( 1, wxLIST_AUTOSIZE );
+    m_lcSources->SetColumnWidth( 2, wxLIST_AUTOSIZE );
+    m_lcSources->SetColumnWidth( 3, wxLIST_AUTOSIZE );
+    m_lcSources->SetColumnWidth( 4, wxLIST_AUTOSIZE );
 }
 
 ConnectorSourceDlgImpl::ConnectorSourceDlgImpl( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : ConnectorSourceDlg( parent, id, title, pos, size, style ) 
@@ -73,7 +79,6 @@ ConnectorSourceDlgImpl::ConnectorSourceDlgImpl( wxWindow* parent, wxWindowID id,
     wxListItem col0;
     col0.SetId(0);
     col0.SetText( _("Type") );
-    col0.SetWidth(50);
     m_lcSources->InsertColumn(0, col0);
 
     wxListItem col1;
