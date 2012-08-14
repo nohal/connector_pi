@@ -19,81 +19,153 @@ ConnectorSourceDlg::ConnectorSourceDlg( wxWindow* parent, wxWindowID id, const w
 	wxBoxSizer* bSizer5;
 	bSizer5 = new wxBoxSizer( wxVERTICAL );
 	
+	wxBoxSizer* bSizer17;
+	bSizer17 = new wxBoxSizer( wxHORIZONTAL );
+	
+	m_lcSources = new wxListCtrl( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLC_REPORT|wxLC_SINGLE_SEL );
+	bSizer17->Add( m_lcSources, 1, wxALL|wxEXPAND, 5 );
+	
+	wxBoxSizer* bSizer18;
+	bSizer18 = new wxBoxSizer( wxVERTICAL );
+	
+	m_buttonAdd = new wxButton( this, wxID_ANY, _("Add"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer18->Add( m_buttonAdd, 0, wxALL, 5 );
+	
+	m_buttonRemove = new wxButton( this, wxID_ANY, _("Remove"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_buttonRemove->Enable( false );
+	
+	bSizer18->Add( m_buttonRemove, 0, wxALL, 5 );
+	
+	
+	bSizer17->Add( bSizer18, 0, wxEXPAND, 5 );
+	
+	
+	bSizer5->Add( bSizer17, 0, wxEXPAND, 5 );
+	
 	wxBoxSizer* bSizer7;
 	bSizer7 = new wxBoxSizer( wxHORIZONTAL );
 	
-	wxStaticBoxSizer* sbSizer2;
-	sbSizer2 = new wxStaticBoxSizer( new wxStaticBox( this, wxID_ANY, _("Properties") ), wxVERTICAL );
+	sbSizerConnectionProps = new wxStaticBoxSizer( new wxStaticBox( this, wxID_ANY, _("Properties") ), wxVERTICAL );
 	
-	wxGridSizer* gSizer1;
-	gSizer1 = new wxGridSizer( 0, 2, 0, 0 );
+	wxBoxSizer* bSizer15;
+	bSizer15 = new wxBoxSizer( wxHORIZONTAL );
 	
-	m_staticText1 = new wxStaticText( this, wxID_ANY, _("Port"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_staticText1->Wrap( -1 );
-	gSizer1->Add( m_staticText1, 0, wxALL, 5 );
+	m_rbTypeSerial = new wxRadioButton( this, wxID_ANY, _("Serial"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_rbTypeSerial->SetValue( true ); 
+	bSizer15->Add( m_rbTypeSerial, 0, wxALL, 5 );
+	
+	m_rbTypeNet = new wxRadioButton( this, wxID_ANY, _("Network"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer15->Add( m_rbTypeNet, 0, wxALL, 5 );
+	
+	
+	sbSizerConnectionProps->Add( bSizer15, 0, wxEXPAND, 0 );
+	
+	gSizerNetProps = new wxGridSizer( 0, 2, 0, 0 );
+	
+	m_stNetProto = new wxStaticText( this, wxID_ANY, _("Protocol"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_stNetProto->Wrap( -1 );
+	gSizerNetProps->Add( m_stNetProto, 0, wxALL, 5 );
+	
+	wxBoxSizer* bSizer16;
+	bSizer16 = new wxBoxSizer( wxHORIZONTAL );
+	
+	m_rbNetProtoTCP = new wxRadioButton( this, wxID_ANY, _("TCP"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
+	bSizer16->Add( m_rbNetProtoTCP, 0, wxALL, 5 );
+	
+	m_rbNetProtoUDP = new wxRadioButton( this, wxID_ANY, _("UDP"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer16->Add( m_rbNetProtoUDP, 0, wxALL, 5 );
+	
+	m_rbNetProtoGPSD = new wxRadioButton( this, wxID_ANY, _("GPSD"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer16->Add( m_rbNetProtoGPSD, 0, wxALL, 5 );
+	
+	
+	gSizerNetProps->Add( bSizer16, 1, wxEXPAND, 5 );
+	
+	m_stNetAddr = new wxStaticText( this, wxID_ANY, _("Address"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_stNetAddr->Wrap( -1 );
+	gSizerNetProps->Add( m_stNetAddr, 0, wxALL, 5 );
+	
+	m_tNetAddress = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	gSizerNetProps->Add( m_tNetAddress, 0, wxEXPAND|wxTOP, 5 );
+	
+	m_stNetPort = new wxStaticText( this, wxID_ANY, _("Port"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_stNetPort->Wrap( -1 );
+	gSizerNetProps->Add( m_stNetPort, 0, wxALL, 5 );
+	
+	m_tNetPort = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	gSizerNetProps->Add( m_tNetPort, 1, wxEXPAND|wxTOP, 5 );
+	
+	
+	sbSizerConnectionProps->Add( gSizerNetProps, 0, wxEXPAND, 5 );
+	
+	gSizerSerProps = new wxGridSizer( 0, 4, 0, 0 );
+	
+	m_stSerPort = new wxStaticText( this, wxID_ANY, _("Port"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_stSerPort->Wrap( -1 );
+	gSizerSerProps->Add( m_stSerPort, 0, wxALL, 5 );
 	
 	m_comboPort = new wxComboBox( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, NULL, 0 ); 
-	gSizer1->Add( m_comboPort, 0, wxEXPAND|wxTOP, 5 );
+	gSizerSerProps->Add( m_comboPort, 0, wxEXPAND|wxTOP, 5 );
 	
-	m_staticText2 = new wxStaticText( this, wxID_ANY, _("Baudrate"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_staticText2->Wrap( -1 );
-	gSizer1->Add( m_staticText2, 0, wxALL, 5 );
+	m_stSerBaudrate = new wxStaticText( this, wxID_ANY, _("Baudrate"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_stSerBaudrate->Wrap( -1 );
+	gSizerSerProps->Add( m_stSerBaudrate, 0, wxALL, 5 );
 	
 	wxString m_choiceBaudRateChoices[] = { _("150"), _("300"), _("600"), _("1200"), _("2400"), _("4800"), _("9600"), _("19200"), _("38400"), _("57600"), _("115200"), _("230400"), _("460800"), _("921600") };
 	int m_choiceBaudRateNChoices = sizeof( m_choiceBaudRateChoices ) / sizeof( wxString );
 	m_choiceBaudRate = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_choiceBaudRateNChoices, m_choiceBaudRateChoices, 0 );
 	m_choiceBaudRate->SetSelection( 0 );
-	gSizer1->Add( m_choiceBaudRate, 1, wxEXPAND|wxTOP, 5 );
+	gSizerSerProps->Add( m_choiceBaudRate, 1, wxEXPAND|wxTOP, 5 );
 	
-	m_staticText4 = new wxStaticText( this, wxID_ANY, _("Data bits"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_staticText4->Wrap( -1 );
-	gSizer1->Add( m_staticText4, 0, wxALL, 5 );
+	m_stSerDatabits = new wxStaticText( this, wxID_ANY, _("Data bits"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_stSerDatabits->Wrap( -1 );
+	gSizerSerProps->Add( m_stSerDatabits, 0, wxALL, 5 );
 	
 	wxString m_choiceDataBitsChoices[] = { _("8"), _("7"), _("6"), _("5") };
 	int m_choiceDataBitsNChoices = sizeof( m_choiceDataBitsChoices ) / sizeof( wxString );
 	m_choiceDataBits = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_choiceDataBitsNChoices, m_choiceDataBitsChoices, 0 );
 	m_choiceDataBits->SetSelection( 0 );
-	gSizer1->Add( m_choiceDataBits, 0, wxEXPAND|wxTOP, 5 );
+	gSizerSerProps->Add( m_choiceDataBits, 0, wxEXPAND|wxTOP, 5 );
 	
-	m_staticText5 = new wxStaticText( this, wxID_ANY, _("Parity"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_staticText5->Wrap( -1 );
-	gSizer1->Add( m_staticText5, 0, wxALL, 5 );
+	m_stSerParity = new wxStaticText( this, wxID_ANY, _("Parity"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_stSerParity->Wrap( -1 );
+	gSizerSerProps->Add( m_stSerParity, 0, wxALL, 5 );
 	
 	wxString m_choiceParityChoices[] = { _("None"), _("Odd"), _("Even"), _("Mark"), _("Space") };
 	int m_choiceParityNChoices = sizeof( m_choiceParityChoices ) / sizeof( wxString );
 	m_choiceParity = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_choiceParityNChoices, m_choiceParityChoices, 0 );
 	m_choiceParity->SetSelection( 0 );
-	gSizer1->Add( m_choiceParity, 0, wxEXPAND|wxTOP, 5 );
+	gSizerSerProps->Add( m_choiceParity, 0, wxEXPAND|wxTOP, 5 );
 	
-	m_staticText6 = new wxStaticText( this, wxID_ANY, _("Stop bits"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_staticText6->Wrap( -1 );
-	gSizer1->Add( m_staticText6, 0, wxALL, 5 );
+	m_stSerStopbits = new wxStaticText( this, wxID_ANY, _("Stop bits"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_stSerStopbits->Wrap( -1 );
+	gSizerSerProps->Add( m_stSerStopbits, 0, wxALL, 5 );
 	
 	wxString m_choiceStopBitsChoices[] = { _("1"), _("2") };
 	int m_choiceStopBitsNChoices = sizeof( m_choiceStopBitsChoices ) / sizeof( wxString );
 	m_choiceStopBits = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_choiceStopBitsNChoices, m_choiceStopBitsChoices, 0 );
 	m_choiceStopBits->SetSelection( 0 );
-	gSizer1->Add( m_choiceStopBits, 0, wxEXPAND|wxTOP, 5 );
+	gSizerSerProps->Add( m_choiceStopBits, 0, wxEXPAND|wxTOP, 5 );
 	
 	m_cbRtsCts = new wxCheckBox( this, wxID_ANY, _("RTS/CTS"), wxDefaultPosition, wxDefaultSize, 0 );
-	gSizer1->Add( m_cbRtsCts, 0, wxALL, 5 );
+	gSizerSerProps->Add( m_cbRtsCts, 0, wxALL, 5 );
 	
 	m_cbXonXoff = new wxCheckBox( this, wxID_ANY, _("Xon/Xoff"), wxDefaultPosition, wxDefaultSize, 0 );
-	gSizer1->Add( m_cbXonXoff, 0, wxALL, 5 );
+	gSizerSerProps->Add( m_cbXonXoff, 0, wxALL, 5 );
 	
-	m_staticText8 = new wxStaticText( this, wxID_ANY, _("EOS is"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_staticText8->Wrap( -1 );
-	gSizer1->Add( m_staticText8, 0, wxALL, 5 );
+	m_stSerEos = new wxStaticText( this, wxID_ANY, _("EOS is"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_stSerEos->Wrap( -1 );
+	gSizerSerProps->Add( m_stSerEos, 0, wxALL, 5 );
 	
 	wxString m_choiceEOSChoices[] = { _("<CR><LF>"), _("<LF>"), _("<CR>"), _("<LF><CR>"), _("None") };
 	int m_choiceEOSNChoices = sizeof( m_choiceEOSChoices ) / sizeof( wxString );
 	m_choiceEOS = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_choiceEOSNChoices, m_choiceEOSChoices, 0 );
 	m_choiceEOS->SetSelection( 0 );
-	gSizer1->Add( m_choiceEOS, 0, wxEXPAND|wxTOP, 5 );
+	gSizerSerProps->Add( m_choiceEOS, 0, wxEXPAND|wxTOP, 5 );
 	
-	m_staticText3 = new wxStaticText( this, wxID_ANY, _("Protocol"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_staticText3->Wrap( -1 );
-	gSizer1->Add( m_staticText3, 0, wxALL, 5 );
+	m_stSerProtocol = new wxStaticText( this, wxID_ANY, _("Protocol"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_stSerProtocol->Wrap( -1 );
+	gSizerSerProps->Add( m_stSerProtocol, 0, wxALL, 5 );
 	
 	wxString m_choiceSerialProtocolChoices[] = { _("NMEA 0183"), _("NMEA 2000"), _("Seatalk") };
 	int m_choiceSerialProtocolNChoices = sizeof( m_choiceSerialProtocolChoices ) / sizeof( wxString );
@@ -101,16 +173,16 @@ ConnectorSourceDlg::ConnectorSourceDlg( wxWindow* parent, wxWindowID id, const w
 	m_choiceSerialProtocol->SetSelection( 0 );
 	m_choiceSerialProtocol->Enable( false );
 	
-	gSizer1->Add( m_choiceSerialProtocol, 1, wxEXPAND|wxTOP, 5 );
+	gSizerSerProps->Add( m_choiceSerialProtocol, 1, wxEXPAND|wxTOP, 5 );
 	
 	
-	sbSizer2->Add( gSizer1, 0, wxEXPAND, 5 );
+	sbSizerConnectionProps->Add( gSizerSerProps, 0, wxEXPAND, 5 );
 	
 	m_cbCheckCRC = new wxCheckBox( this, wxID_ANY, _("Control checksum"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_cbCheckCRC->SetValue(true); 
 	m_cbCheckCRC->SetToolTip( _("If checked, only the sentences with a valid checksum are passed through") );
 	
-	sbSizer2->Add( m_cbCheckCRC, 0, wxALL, 5 );
+	sbSizerConnectionProps->Add( m_cbCheckCRC, 0, wxALL, 5 );
 	
 	wxBoxSizer* bSizer9;
 	bSizer9 = new wxBoxSizer( wxHORIZONTAL );
@@ -122,7 +194,7 @@ ConnectorSourceDlg::ConnectorSourceDlg( wxWindow* parent, wxWindowID id, const w
 	bSizer9->Add( m_rbIIgnore, 0, wxALL, 5 );
 	
 	
-	sbSizer2->Add( bSizer9, 0, wxEXPAND, 5 );
+	sbSizerConnectionProps->Add( bSizer9, 0, wxEXPAND, 5 );
 	
 	wxBoxSizer* bSizer11;
 	bSizer11 = new wxBoxSizer( wxHORIZONTAL );
@@ -134,10 +206,10 @@ ConnectorSourceDlg::ConnectorSourceDlg( wxWindow* parent, wxWindowID id, const w
 	bSizer11->Add( m_btnInputStcList, 0, wxALL, 5 );
 	
 	
-	sbSizer2->Add( bSizer11, 0, wxEXPAND, 5 );
+	sbSizerConnectionProps->Add( bSizer11, 0, wxEXPAND, 5 );
 	
 	m_cbOutput = new wxCheckBox( this, wxID_ANY, _("Output on this port"), wxDefaultPosition, wxDefaultSize, 0 );
-	sbSizer2->Add( m_cbOutput, 0, wxALL, 5 );
+	sbSizerConnectionProps->Add( m_cbOutput, 0, wxALL, 5 );
 	
 	wxBoxSizer* bSizer10;
 	bSizer10 = new wxBoxSizer( wxHORIZONTAL );
@@ -149,7 +221,7 @@ ConnectorSourceDlg::ConnectorSourceDlg( wxWindow* parent, wxWindowID id, const w
 	bSizer10->Add( m_rbOIgnore, 0, wxALL, 5 );
 	
 	
-	sbSizer2->Add( bSizer10, 0, wxEXPAND, 5 );
+	sbSizerConnectionProps->Add( bSizer10, 0, wxEXPAND, 5 );
 	
 	wxBoxSizer* bSizer12;
 	bSizer12 = new wxBoxSizer( wxHORIZONTAL );
@@ -161,10 +233,10 @@ ConnectorSourceDlg::ConnectorSourceDlg( wxWindow* parent, wxWindowID id, const w
 	bSizer12->Add( m_btnOutputStcList, 0, wxALL, 5 );
 	
 	
-	sbSizer2->Add( bSizer12, 0, wxEXPAND, 5 );
+	sbSizerConnectionProps->Add( bSizer12, 0, wxEXPAND, 5 );
 	
 	
-	bSizer7->Add( sbSizer2, 1, wxALL|wxEXPAND, 5 );
+	bSizer7->Add( sbSizerConnectionProps, 1, wxALL|wxEXPAND, 5 );
 	
 	
 	bSizer5->Add( bSizer7, 1, wxEXPAND, 5 );
@@ -175,6 +247,8 @@ ConnectorSourceDlg::ConnectorSourceDlg( wxWindow* parent, wxWindowID id, const w
 	m_sdbSizerDlgButtons = new wxStdDialogButtonSizer();
 	m_sdbSizerDlgButtonsOK = new wxButton( this, wxID_OK );
 	m_sdbSizerDlgButtons->AddButton( m_sdbSizerDlgButtonsOK );
+	m_sdbSizerDlgButtonsApply = new wxButton( this, wxID_APPLY );
+	m_sdbSizerDlgButtons->AddButton( m_sdbSizerDlgButtonsApply );
 	m_sdbSizerDlgButtonsCancel = new wxButton( this, wxID_CANCEL );
 	m_sdbSizerDlgButtons->AddButton( m_sdbSizerDlgButtonsCancel );
 	m_sdbSizerDlgButtons->Realize();
@@ -188,6 +262,14 @@ ConnectorSourceDlg::ConnectorSourceDlg( wxWindow* parent, wxWindowID id, const w
 	this->Centre( wxBOTH );
 	
 	// Connect Events
+	m_lcSources->Connect( wxEVT_COMMAND_LIST_ITEM_SELECTED, wxListEventHandler( ConnectorSourceDlg::OnSelectDatasource ), NULL, this );
+	m_buttonAdd->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ConnectorSourceDlg::OnAddClick ), NULL, this );
+	m_buttonRemove->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ConnectorSourceDlg::OnRemoveClick ), NULL, this );
+	m_rbTypeSerial->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( ConnectorSourceDlg::OnTypeSerialSelected ), NULL, this );
+	m_rbTypeNet->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( ConnectorSourceDlg::OnTypeNetSelected ), NULL, this );
+	m_rbNetProtoTCP->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( ConnectorSourceDlg::OnNetProtocolSelected ), NULL, this );
+	m_rbNetProtoUDP->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( ConnectorSourceDlg::OnNetProtocolSelected ), NULL, this );
+	m_rbNetProtoGPSD->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( ConnectorSourceDlg::OnNetProtocolSelected ), NULL, this );
 	m_choiceBaudRate->Connect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( ConnectorSourceDlg::OnBaudrateChoice ), NULL, this );
 	m_choiceSerialProtocol->Connect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( ConnectorSourceDlg::OnProtocolChoice ), NULL, this );
 	m_cbCheckCRC->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( ConnectorSourceDlg::OnCrcCheck ), NULL, this );
@@ -197,6 +279,7 @@ ConnectorSourceDlg::ConnectorSourceDlg( wxWindow* parent, wxWindowID id, const w
 	m_cbOutput->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( ConnectorSourceDlg::OnCbOutput ), NULL, this );
 	m_rbOAccept->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( ConnectorSourceDlg::OnRbOutput ), NULL, this );
 	m_btnOutputStcList->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ConnectorSourceDlg::OnBtnOStcs ), NULL, this );
+	m_sdbSizerDlgButtonsApply->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ConnectorSourceDlg::OnApplyClick ), NULL, this );
 	m_sdbSizerDlgButtonsCancel->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ConnectorSourceDlg::OnCancelClick ), NULL, this );
 	m_sdbSizerDlgButtonsOK->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ConnectorSourceDlg::OnOkClick ), NULL, this );
 }
@@ -204,6 +287,14 @@ ConnectorSourceDlg::ConnectorSourceDlg( wxWindow* parent, wxWindowID id, const w
 ConnectorSourceDlg::~ConnectorSourceDlg()
 {
 	// Disconnect Events
+	m_lcSources->Disconnect( wxEVT_COMMAND_LIST_ITEM_SELECTED, wxListEventHandler( ConnectorSourceDlg::OnSelectDatasource ), NULL, this );
+	m_buttonAdd->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ConnectorSourceDlg::OnAddClick ), NULL, this );
+	m_buttonRemove->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ConnectorSourceDlg::OnRemoveClick ), NULL, this );
+	m_rbTypeSerial->Disconnect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( ConnectorSourceDlg::OnTypeSerialSelected ), NULL, this );
+	m_rbTypeNet->Disconnect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( ConnectorSourceDlg::OnTypeNetSelected ), NULL, this );
+	m_rbNetProtoTCP->Disconnect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( ConnectorSourceDlg::OnNetProtocolSelected ), NULL, this );
+	m_rbNetProtoUDP->Disconnect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( ConnectorSourceDlg::OnNetProtocolSelected ), NULL, this );
+	m_rbNetProtoGPSD->Disconnect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( ConnectorSourceDlg::OnNetProtocolSelected ), NULL, this );
 	m_choiceBaudRate->Disconnect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( ConnectorSourceDlg::OnBaudrateChoice ), NULL, this );
 	m_choiceSerialProtocol->Disconnect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( ConnectorSourceDlg::OnProtocolChoice ), NULL, this );
 	m_cbCheckCRC->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( ConnectorSourceDlg::OnCrcCheck ), NULL, this );
@@ -213,6 +304,7 @@ ConnectorSourceDlg::~ConnectorSourceDlg()
 	m_cbOutput->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( ConnectorSourceDlg::OnCbOutput ), NULL, this );
 	m_rbOAccept->Disconnect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( ConnectorSourceDlg::OnRbOutput ), NULL, this );
 	m_btnOutputStcList->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ConnectorSourceDlg::OnBtnOStcs ), NULL, this );
+	m_sdbSizerDlgButtonsApply->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ConnectorSourceDlg::OnApplyClick ), NULL, this );
 	m_sdbSizerDlgButtonsCancel->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ConnectorSourceDlg::OnCancelClick ), NULL, this );
 	m_sdbSizerDlgButtonsOK->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ConnectorSourceDlg::OnOkClick ), NULL, this );
 	
@@ -284,82 +376,5 @@ SentenceListDlg::~SentenceListDlg()
 	m_btnDelAll->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SentenceListDlg::OnDeleteAllClick ), NULL, this );
 	m_sdbSizer4Cancel->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SentenceListDlg::OnCancelClick ), NULL, this );
 	m_sdbSizer4OK->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SentenceListDlg::OnOkClick ), NULL, this );
-	
-}
-
-ConnectorCfgDlg::ConnectorCfgDlg( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
-{
-	this->SetSizeHints( wxDefaultSize, wxDefaultSize );
-	
-	wxBoxSizer* bSizer1;
-	bSizer1 = new wxBoxSizer( wxVERTICAL );
-	
-	wxStaticBoxSizer* sbSizer1;
-	sbSizer1 = new wxStaticBoxSizer( new wxStaticBox( this, wxID_ANY, _("Data Sources") ), wxVERTICAL );
-	
-	wxBoxSizer* bSizer2;
-	bSizer2 = new wxBoxSizer( wxHORIZONTAL );
-	
-	m_lbDatasources = new wxListBox( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, NULL, 0 ); 
-	bSizer2->Add( m_lbDatasources, 1, wxALL|wxEXPAND, 5 );
-	
-	wxBoxSizer* bSizer3;
-	bSizer3 = new wxBoxSizer( wxVERTICAL );
-	
-	m_buttonAdd = new wxButton( this, wxID_ANY, _("Add"), wxDefaultPosition, wxDefaultSize, 0 );
-	bSizer3->Add( m_buttonAdd, 0, wxALL, 5 );
-	
-	m_buttonEdit = new wxButton( this, wxID_ANY, _("Properties"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_buttonEdit->Enable( false );
-	
-	bSizer3->Add( m_buttonEdit, 0, wxALL, 5 );
-	
-	m_buttonRemove = new wxButton( this, wxID_ANY, _("Remove"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_buttonRemove->Enable( false );
-	
-	bSizer3->Add( m_buttonRemove, 0, wxALL, 5 );
-	
-	
-	bSizer2->Add( bSizer3, 0, wxEXPAND, 5 );
-	
-	
-	sbSizer1->Add( bSizer2, 1, wxEXPAND, 5 );
-	
-	
-	bSizer1->Add( sbSizer1, 1, wxALL|wxEXPAND, 5 );
-	
-	m_sdbSizerDlgButtons = new wxStdDialogButtonSizer();
-	m_sdbSizerDlgButtonsOK = new wxButton( this, wxID_OK );
-	m_sdbSizerDlgButtons->AddButton( m_sdbSizerDlgButtonsOK );
-	m_sdbSizerDlgButtonsCancel = new wxButton( this, wxID_CANCEL );
-	m_sdbSizerDlgButtons->AddButton( m_sdbSizerDlgButtonsCancel );
-	m_sdbSizerDlgButtons->Realize();
-	
-	bSizer1->Add( m_sdbSizerDlgButtons, 0, wxALL|wxEXPAND, 5 );
-	
-	
-	this->SetSizer( bSizer1 );
-	this->Layout();
-	
-	this->Centre( wxBOTH );
-	
-	// Connect Events
-	m_lbDatasources->Connect( wxEVT_COMMAND_LISTBOX_SELECTED, wxCommandEventHandler( ConnectorCfgDlg::OnSelectDatasource ), NULL, this );
-	m_buttonAdd->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ConnectorCfgDlg::OnAddClick ), NULL, this );
-	m_buttonEdit->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ConnectorCfgDlg::OnEditClick ), NULL, this );
-	m_buttonRemove->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ConnectorCfgDlg::OnRemoveClick ), NULL, this );
-	m_sdbSizerDlgButtonsCancel->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ConnectorCfgDlg::OnCancelClick ), NULL, this );
-	m_sdbSizerDlgButtonsOK->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ConnectorCfgDlg::OnOkClick ), NULL, this );
-}
-
-ConnectorCfgDlg::~ConnectorCfgDlg()
-{
-	// Disconnect Events
-	m_lbDatasources->Disconnect( wxEVT_COMMAND_LISTBOX_SELECTED, wxCommandEventHandler( ConnectorCfgDlg::OnSelectDatasource ), NULL, this );
-	m_buttonAdd->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ConnectorCfgDlg::OnAddClick ), NULL, this );
-	m_buttonEdit->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ConnectorCfgDlg::OnEditClick ), NULL, this );
-	m_buttonRemove->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ConnectorCfgDlg::OnRemoveClick ), NULL, this );
-	m_sdbSizerDlgButtonsCancel->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ConnectorCfgDlg::OnCancelClick ), NULL, this );
-	m_sdbSizerDlgButtonsOK->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ConnectorCfgDlg::OnOkClick ), NULL, this );
 	
 }

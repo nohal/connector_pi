@@ -48,39 +48,65 @@ wxString StringArrayToString(wxArrayString arr)
     return ret;
 }
 
-//ConnectorCfgDlgImpl::ConnectorCfgDlgImpl( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : ConnectorCfgDlg( parent, id, title, pos, size, style )
-ConnectorCfgDlgImpl::ConnectorCfgDlgImpl( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : ConnectorCfgDlg( parent, id, title, pos, size, style )
-{
-    sourcedlg = new ConnectorSourceDlgImpl(this);
-}
-
-ConnectorCfgDlgImpl::~ConnectorCfgDlgImpl()
-{
-    delete sourcedlg;
-}
-
-void ConnectorCfgDlgImpl::LinkToPlugin(connector_pi *plugin)
+void ConnectorSourceDlgImpl::LinkToPlugin(connector_pi *plugin)
 {
     m_pPlugin = plugin;
     FillSourceList();
 }
 
-void ConnectorCfgDlgImpl::FillSourceList()
+void ConnectorSourceDlgImpl::FillSourceList()
 {
-    m_buttonEdit->Enable(false);
     m_buttonRemove->Enable(false);
-    m_lbDatasources->Clear();
+    m_lcSources->DeleteAllItems();
     for (size_t i = 0; i < m_pPlugin->m_pConnectionParams->Count(); i++)
-        m_lbDatasources->Append(m_pPlugin->m_pConnectionParams->Item(i)->Port);
+    {
+        long itemIndex = m_lcSources->InsertItem(i, m_pPlugin->m_pConnectionParams->Item(i)->GetSourceTypeStr());
+        m_lcSources->SetItem(itemIndex, 1, m_pPlugin->m_pConnectionParams->Item(i)->GetAddressStr());
+        m_lcSources->SetItem(itemIndex, 2, m_pPlugin->m_pConnectionParams->Item(i)->GetParametersStr());
+        m_lcSources->SetItem(itemIndex, 3, m_pPlugin->m_pConnectionParams->Item(i)->GetOutputValueStr());
+        m_lcSources->SetItem(itemIndex, 4, m_pPlugin->m_pConnectionParams->Item(i)->GetFiltersStr());
+    }
 }
 
 ConnectorSourceDlgImpl::ConnectorSourceDlgImpl( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : ConnectorSourceDlg( parent, id, title, pos, size, style ) 
 {
+    wxListItem col0;
+    col0.SetId(0);
+    col0.SetText( _("Type") );
+    col0.SetWidth(50);
+    m_lcSources->InsertColumn(0, col0);
+
+    wxListItem col1;
+    col1.SetId(1);
+    col1.SetText( _("Source") );
+    m_lcSources->InsertColumn(1, col1);
+
+    wxListItem col2;
+    col2.SetId(2);
+    col2.SetText( _("Parameters") );
+    m_lcSources->InsertColumn(2, col2);
+
+    wxListItem col3;
+    col3.SetId(3);
+    col3.SetText( _("Output") );
+    m_lcSources->InsertColumn(3, col3);
+
+    wxListItem col4;
+    col4.SetId(4);
+    col4.SetText( _("Filters") );
+    m_lcSources->InsertColumn(4, col4);
+
+    m_lcSources->Refresh();
+
     m_stcdialog = new SentenceListDlgImpl(this);
     wxArrayString ports = ScanPorts();
     for(size_t i=0;i<ports.Count();i++) {
 	   m_comboPort->Append(ports.Item(i));
     }
+    ShowCommon( false );
+    ShowSerial( false );
+    ShowNet( false );
+    m_sdbSizerDlgButtonsApply->Disable();
 }
 
 ConnectorSourceDlgImpl::~ConnectorSourceDlgImpl()
@@ -113,57 +139,68 @@ void ConnectorSourceDlgImpl::SetConnectionParams(ConnectionParams *cp)
     m_cbRtsCts->SetValue(cp->RtsCts);
     m_cbXonXoff->SetValue(cp->XonXoff);
     m_choiceEOS->Select(cp->EOS);
+    SetFormToSerial(); //TODO
 }
 
 
-
-void ConnectorCfgDlgImpl::OnSelectDatasource( wxCommandEvent& event )
+void ConnectorSourceDlgImpl::OnSelectDatasource( wxListEvent& event )
 {
-    m_buttonEdit->Enable();
+    SetConnectionParams(m_pPlugin->m_pConnectionParams->Item(event.GetIndex()));
     m_buttonRemove->Enable();
+    m_sdbSizerDlgButtonsApply->Enable();
+    event.Skip();
 }
 
-void ConnectorCfgDlgImpl::OnAddClick( wxCommandEvent& event )
+void ConnectorSourceDlgImpl::OnAddClick( wxCommandEvent& event )
 {
     ConnectionParams *cp = new ConnectionParams();
-    sourcedlg->SetConnectionParams(cp);
-    sourcedlg->Fit();
-    if (sourcedlg->ShowModal() == wxID_OK)
-        m_pPlugin->m_pConnectionParams->Add(cp);
-    FillSourceList();
-}
+    SetConnectionParams( cp );
+    SetFormToSerial();
+    params_saved = false;
 
-void ConnectorCfgDlgImpl::OnEditClick( wxCommandEvent& event )
-{
-    sourcedlg->SetConnectionParams(m_pPlugin->m_pConnectionParams->Item(m_lbDatasources->GetSelection()));
-    sourcedlg->Fit();
-    sourcedlg->ShowModal();
-    FillSourceList();
-}
-
-void ConnectorCfgDlgImpl::OnRemoveClick( wxCommandEvent& event )
-{
-    m_pPlugin->m_pConnectionParams->RemoveAt(m_lbDatasources->GetSelection());
-    FillSourceList();
-}
-
-void ConnectorSourceDlgImpl::OnOkClick( wxCommandEvent& event )
-{
-    if (m_comboPort->GetStringSelection() == wxEmptyString)
+    long itemIndex = -1;
+    for ( ;; ) 
     {
-        wxMessageBox(_("You must select or enter the port..."), _("Error!"));
-        return;
+        itemIndex = m_lcSources->GetNextItem( itemIndex, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED );
+        if ( itemIndex == -1 )
+            break;
+        m_lcSources->SetItemState( itemIndex, 0, wxLIST_STATE_SELECTED|wxLIST_STATE_FOCUSED );
     }
-    m_pConnectionParams->Baudrate = wxAtoi(m_choiceBaudRate->GetStringSelection());
+    m_sdbSizerDlgButtonsApply->Enable();
+    m_buttonRemove->Enable( false );
+}
+
+void ConnectorSourceDlgImpl::OnRemoveClick( wxCommandEvent& event )
+{
+    long itemIndex = -1;
+    for ( ;; ) 
+    {
+        itemIndex = m_lcSources->GetNextItem( itemIndex, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED );
+        if ( itemIndex == -1 )
+            break;
+        m_pPlugin->m_pConnectionParams->RemoveAt( itemIndex );
+    }
+    FillSourceList();
+    m_sdbSizerDlgButtonsApply->Enable( false );
+}
+
+bool ConnectorSourceDlgImpl::SaveConnectionParams()
+{
+    if ( m_comboPort->GetStringSelection() == wxEmptyString )
+    {
+        wxMessageBox( _("You must select or enter the port..."), _("Error!") );
+        return false;
+    }
+    m_pConnectionParams->Baudrate = wxAtoi( m_choiceBaudRate->GetStringSelection() );
     m_pConnectionParams->ChecksumCheck = m_cbCheckCRC->GetValue();
-    m_pConnectionParams->InputSentenceList = wxStringTokenize(m_tcInputStc->GetValue());
-    if (m_rbIAccept->GetValue())
+    m_pConnectionParams->InputSentenceList = wxStringTokenize( m_tcInputStc->GetValue() );
+    if ( m_rbIAccept->GetValue() )
         m_pConnectionParams->InputSentenceListType = WHITELIST;
     else
         m_pConnectionParams->InputSentenceListType = BLACKLIST;
     m_pConnectionParams->Output = m_cbOutput->GetValue();
-    m_pConnectionParams->OutputSentenceList = wxStringTokenize(m_tcOutputStc->GetValue());
-    if (m_rbOAccept->GetValue())
+    m_pConnectionParams->OutputSentenceList = wxStringTokenize( m_tcOutputStc->GetValue() );
+    if ( m_rbOAccept->GetValue() )
         m_pConnectionParams->OutputSentenceListType = WHITELIST;
     else
         m_pConnectionParams->OutputSentenceListType = BLACKLIST;
@@ -175,6 +212,30 @@ void ConnectorSourceDlgImpl::OnOkClick( wxCommandEvent& event )
     m_pConnectionParams->RtsCts = m_cbRtsCts->GetValue();
     m_pConnectionParams->XonXoff = m_cbXonXoff->GetValue();
     m_pConnectionParams->EOS = (EOSType)m_choiceEOS->GetSelection();
+    return true;
+}
+
+void ConnectorSourceDlgImpl::OnOkClick( wxCommandEvent& event )
+{
+    if(SaveConnectionParams() && !params_saved)
+    {
+        m_pPlugin->m_pConnectionParams->Add(m_pConnectionParams);
+        params_saved = true;
+    }
+    event.Skip();
+}
+
+void ConnectorSourceDlgImpl::OnApplyClick( wxCommandEvent& event )
+{
+    long itemIndex = m_lcSources->GetNextItem( -1, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED );
+    if(SaveConnectionParams() && !params_saved)
+    {
+        m_pPlugin->m_pConnectionParams->Add(m_pConnectionParams);
+        params_saved = true;
+        itemIndex = m_pPlugin->m_pConnectionParams->Count() - 1;
+    }
+    FillSourceList();
+    m_lcSources->SetItemState(itemIndex, wxLIST_STATE_SELECTED, wxLIST_STATE_SELECTED);
     event.Skip();
 }
 
@@ -190,6 +251,138 @@ void ConnectorSourceDlgImpl::OnBtnOStcs( wxCommandEvent& event )
     m_stcdialog->SetSentenceList(wxStringTokenize(m_tcOutputStc->GetValue(), _T(",")));
     if (m_stcdialog->ShowModal() == wxID_OK)
         m_tcOutputStc->SetValue(m_stcdialog->GetSentencesAsText());
+}
+
+void ConnectorSourceDlgImpl::ShowCommon(bool visible)
+{
+    if ( visible )
+    {
+        m_rbTypeSerial->Show();
+        m_rbTypeNet->Show();
+        m_rbIAccept->Show();
+        m_rbIIgnore->Show();
+        m_rbOAccept->Show();
+        m_rbOIgnore->Show();
+        m_tcInputStc->Show();
+        m_btnInputStcList->Show();
+        m_tcOutputStc->Show();
+        m_btnOutputStcList->Show();
+        m_cbOutput->Show();
+    }
+    else
+    {
+        m_rbTypeSerial->Hide();
+        m_rbTypeNet->Hide();
+        m_rbIAccept->Hide();
+        m_rbIIgnore->Hide();
+        m_rbOAccept->Hide();
+        m_rbOIgnore->Hide();
+        m_tcInputStc->Hide();
+        m_btnInputStcList->Hide();
+        m_tcOutputStc->Hide();
+        m_btnOutputStcList->Hide();
+        m_cbOutput->Hide();
+    }
+}
+
+void ConnectorSourceDlgImpl::ShowNet(bool visible)
+{
+    if ( visible )
+    {
+        m_stNetAddr->Show();
+        m_tNetAddress->Show();
+        m_stNetPort->Show();
+        m_tNetPort->Show();
+        m_stNetProto->Show();
+        m_rbNetProtoGPSD->Show();
+        m_rbNetProtoTCP->Show();
+        m_rbNetProtoUDP->Show();
+    }
+    else
+    {
+        m_stNetAddr->Hide();
+        m_tNetAddress->Hide();
+        m_stNetPort->Hide();
+        m_tNetPort->Hide();
+        m_stNetProto->Hide();
+        m_rbNetProtoGPSD->Hide();
+        m_rbNetProtoTCP->Hide();
+        m_rbNetProtoUDP->Hide();
+    }
+}
+
+void ConnectorSourceDlgImpl::ShowSerial(bool visible)
+{
+    if ( visible )
+    {
+        m_stSerBaudrate->Show();
+        m_choiceBaudRate->Show();
+        m_stSerDatabits->Show();
+        m_choiceDataBits->Show();
+        m_stSerEos->Show();
+        m_choiceEOS->Show();
+        m_stSerParity->Show();
+        m_choiceParity->Show();
+        m_stSerPort->Show();
+        m_comboPort->Show();
+        m_stSerProtocol->Show();
+        m_choiceSerialProtocol->Show();
+        m_stSerStopbits->Show();
+        m_choiceStopBits->Show();
+        m_cbCheckCRC->Show();
+        m_cbRtsCts->Show();
+        m_cbXonXoff->Show();
+        gSizerNetProps->SetDimension(0,0,0,0);
+    }
+    else
+    {
+        m_stSerBaudrate->Hide();
+        m_choiceBaudRate->Hide();
+        m_stSerDatabits->Hide();
+        m_choiceDataBits->Hide();
+        m_stSerEos->Hide();
+        m_choiceEOS->Hide();
+        m_stSerParity->Hide();
+        m_choiceParity->Hide();
+        m_stSerPort->Hide();
+        m_comboPort->Hide();
+        m_stSerProtocol->Hide();
+        m_choiceSerialProtocol->Hide();
+        m_stSerStopbits->Hide();
+        m_choiceStopBits->Hide();
+        m_cbCheckCRC->Hide();
+        m_cbRtsCts->Hide();
+        m_cbXonXoff->Hide();
+        gSizerSerProps->SetDimension(0,0,0,0);
+    }
+}
+
+void ConnectorSourceDlgImpl::SetFormToSerial()
+{
+    ShowCommon( true );
+    ShowNet( false );
+    ShowSerial( true );
+    this->Layout();
+    this->Refresh();
+}
+
+void ConnectorSourceDlgImpl::SetFormToNet()
+{
+    ShowCommon( true );
+    ShowNet( true );
+    ShowSerial( false );
+    this->Layout();
+    this->Refresh();
+}
+
+void ConnectorSourceDlgImpl::OnTypeSerialSelected( wxCommandEvent& event )
+{
+    SetFormToSerial();
+}
+
+void ConnectorSourceDlgImpl::OnTypeNetSelected( wxCommandEvent& event )
+{
+    SetFormToNet();
 }
 
 SentenceListDlgImpl::SentenceListDlgImpl( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : SentenceListDlg( parent, id, title, pos, size, style )

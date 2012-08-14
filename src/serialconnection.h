@@ -112,6 +112,12 @@ public:
 
     wxString        Serialize();
     void            Deserialize(wxString configStr);
+
+    wxString GetSourceTypeStr();
+    wxString GetAddressStr();
+    wxString GetParametersStr();
+    wxString GetOutputValueStr();
+    wxString GetFiltersStr();
 };
 
 //----------------------------------------------------------------------------------------------------------

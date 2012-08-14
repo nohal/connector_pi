@@ -54,7 +54,7 @@
 
 #define CONNECTOR_TOOL_POSITION    -1          // Request default positioning of toolbar tool
 
-class ConnectorCfgDlgImpl;
+class ConnectorSourceDlgImpl;
 class wxArrayOfConnPrm;
 class ConnectionHandler;
 
@@ -96,7 +96,7 @@ private:
     bool              LoadConfig(void);
     bool              SaveConfig(void);
 
-    ConnectorCfgDlgImpl *m_pConnectorDialog;
+    ConnectorSourceDlgImpl *m_pConnectorDialog;
 
     ConnectionHandler *connectionhandler;
 };

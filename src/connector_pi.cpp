@@ -220,7 +220,7 @@ void connector_pi::ShowPreferencesDialog( wxWindow* parent )
 {
     if (!m_pConnectorDialog) 
     {
-        m_pConnectorDialog = new ConnectorCfgDlgImpl( parent, wxID_ANY, _("Connector Preferences") );
+        m_pConnectorDialog = new ConnectorSourceDlgImpl( parent, wxID_ANY, _("Connector Preferences") );
         m_pConnectorDialog->LinkToPlugin(this);
         //m_pConnectorDialog->Fit();
     }

@@ -35,35 +35,19 @@
 //Forward declarations
 class connector_pi;
 class ConnectionParams;
-class ConnectorSourceDlgImpl;
 class SentenceListDlgImpl;
-
-class ConnectorCfgDlgImpl : public ConnectorCfgDlg
-{
-public:
-    ConnectorCfgDlgImpl( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Connector Configuration"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 300,450 ), long style = wxDEFAULT_DIALOG_STYLE ); 
-    ~ConnectorCfgDlgImpl();
-    connector_pi *m_pPlugin;
-    void LinkToPlugin(connector_pi *plugin);
-protected:
-    void OnSelectDatasource( wxCommandEvent& event );
-    void OnAddClick( wxCommandEvent& event );
-    void OnEditClick( wxCommandEvent& event );
-    void OnRemoveClick( wxCommandEvent& event );
-    void OnCancelClick( wxCommandEvent& event ) { event.Skip(); }
-    void OnOkClick( wxCommandEvent& event ) { event.Skip(); }
-private:
-    ConnectorSourceDlgImpl *sourcedlg;
-    void FillSourceList();
-};
 
 class ConnectorSourceDlgImpl : public ConnectorSourceDlg 
 {
 public:
-    ConnectorSourceDlgImpl( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Data source properties"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 550,480 ), long style = wxDEFAULT_DIALOG_STYLE ); 
+    ConnectorSourceDlgImpl( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Data source properties"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 550,600 ), long style = wxDEFAULT_DIALOG_STYLE ); 
     ~ConnectorSourceDlgImpl();
     void SetConnectionParams(ConnectionParams *cp);
+    void LinkToPlugin(connector_pi *plugin);
 protected:
+    void OnSelectDatasource( wxListEvent& event );
+    void OnAddClick( wxCommandEvent& event );
+    void OnRemoveClick( wxCommandEvent& event );
     void OnComSelected( wxCommandEvent& event ) { event.Skip(); }
     void OnNetSelected( wxCommandEvent& event ) { event.Skip(); }
     void OnPortChoice( wxCommandEvent& event ) { event.Skip(); }
@@ -77,10 +61,22 @@ protected:
     void OnBtnOStcs( wxCommandEvent& event );
     void OnCancelClick( wxCommandEvent& event ) { event.Skip(); }
     void OnOkClick( wxCommandEvent& event );
+    void OnApplyClick( wxCommandEvent& event );
+    void OnTypeSerialSelected( wxCommandEvent& event );
+	void OnTypeNetSelected( wxCommandEvent& event );
 private:
     ConnectionParams *m_pConnectionParams;
     SentenceListDlgImpl *m_stcdialog;
     wxArrayString ScanPorts();
+    void FillSourceList();
+    connector_pi *m_pPlugin;
+    void ShowCommon( bool visible );
+    void ShowSerial( bool visible );
+    void ShowNet( bool visible );
+    void SetFormToSerial();
+    void SetFormToNet();
+    bool SaveConnectionParams();
+    bool params_saved;
 };
 
 class SentenceListDlgImpl : public SentenceListDlg 

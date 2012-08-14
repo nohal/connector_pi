@@ -95,6 +95,48 @@ ConnectionParams::ConnectionParams()
     OutputSentenceListType = WHITELIST;
 }
 
+wxString ConnectionParams::GetSourceTypeStr()
+{
+    return _("Serial"); //TODO
+}
+
+wxString ConnectionParams::GetAddressStr()
+{
+    return Port; //TODO
+}
+
+wxString ConnectionParams::GetParametersStr()
+{
+    return wxString::Format(_T("%d, %d, %d, %d"), Baudrate, 8 - Wordlen, Parity, Stopbits); //TODO
+}
+
+wxString ConnectionParams::GetOutputValueStr()
+{
+    if(Output)
+        return _("Yes");
+    else 
+        return _("No");
+}
+
+wxString ConnectionParams::GetFiltersStr()
+{
+    wxString istcs;
+    for(size_t i = 0; i < InputSentenceList.Count(); i++)
+    {
+        if (i > 0)
+            istcs.Append(_T(","));
+        istcs.Append(InputSentenceList[i]);
+    }
+    wxString ostcs;
+    for(size_t i = 0; i < OutputSentenceList.Count(); i++)
+    {
+        if (i > 0)
+            ostcs.Append(_T(","));
+        ostcs.Append(OutputSentenceList[i]);
+    }
+    return  wxString::Format(_T("IN:%s OUT:%s"), istcs.c_str(), ostcs.c_str());
+}
+
 //ConnectionHandler implementation
 void ConnectionHandler::OnTimer(wxTimerEvent& event)
 { 

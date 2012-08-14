@@ -11,19 +11,20 @@
 #include <wx/artprov.h>
 #include <wx/xrc/xmlres.h>
 #include <wx/intl.h>
-#include <wx/string.h>
-#include <wx/stattext.h>
+#include <wx/listctrl.h>
 #include <wx/gdicmn.h>
 #include <wx/font.h>
 #include <wx/colour.h>
 #include <wx/settings.h>
+#include <wx/string.h>
+#include <wx/button.h>
+#include <wx/sizer.h>
+#include <wx/radiobut.h>
+#include <wx/stattext.h>
+#include <wx/textctrl.h>
 #include <wx/combobox.h>
 #include <wx/choice.h>
 #include <wx/checkbox.h>
-#include <wx/sizer.h>
-#include <wx/radiobut.h>
-#include <wx/textctrl.h>
-#include <wx/button.h>
 #include <wx/statbox.h>
 #include <wx/dialog.h>
 #include <wx/listbox.h>
@@ -39,21 +40,37 @@ class ConnectorSourceDlg : public wxDialog
 	private:
 	
 	protected:
-		wxStaticText* m_staticText1;
+		wxListCtrl* m_lcSources;
+		wxButton* m_buttonAdd;
+		wxButton* m_buttonRemove;
+		wxStaticBoxSizer* sbSizerConnectionProps;
+		wxRadioButton* m_rbTypeSerial;
+		wxRadioButton* m_rbTypeNet;
+		wxGridSizer* gSizerNetProps;
+		wxStaticText* m_stNetProto;
+		wxRadioButton* m_rbNetProtoTCP;
+		wxRadioButton* m_rbNetProtoUDP;
+		wxRadioButton* m_rbNetProtoGPSD;
+		wxStaticText* m_stNetAddr;
+		wxTextCtrl* m_tNetAddress;
+		wxStaticText* m_stNetPort;
+		wxTextCtrl* m_tNetPort;
+		wxGridSizer* gSizerSerProps;
+		wxStaticText* m_stSerPort;
 		wxComboBox* m_comboPort;
-		wxStaticText* m_staticText2;
+		wxStaticText* m_stSerBaudrate;
 		wxChoice* m_choiceBaudRate;
-		wxStaticText* m_staticText4;
+		wxStaticText* m_stSerDatabits;
 		wxChoice* m_choiceDataBits;
-		wxStaticText* m_staticText5;
+		wxStaticText* m_stSerParity;
 		wxChoice* m_choiceParity;
-		wxStaticText* m_staticText6;
+		wxStaticText* m_stSerStopbits;
 		wxChoice* m_choiceStopBits;
 		wxCheckBox* m_cbRtsCts;
 		wxCheckBox* m_cbXonXoff;
-		wxStaticText* m_staticText8;
+		wxStaticText* m_stSerEos;
 		wxChoice* m_choiceEOS;
-		wxStaticText* m_staticText3;
+		wxStaticText* m_stSerProtocol;
 		wxChoice* m_choiceSerialProtocol;
 		wxCheckBox* m_cbCheckCRC;
 		wxRadioButton* m_rbIAccept;
@@ -67,9 +84,16 @@ class ConnectorSourceDlg : public wxDialog
 		wxButton* m_btnOutputStcList;
 		wxStdDialogButtonSizer* m_sdbSizerDlgButtons;
 		wxButton* m_sdbSizerDlgButtonsOK;
+		wxButton* m_sdbSizerDlgButtonsApply;
 		wxButton* m_sdbSizerDlgButtonsCancel;
 		
 		// Virtual event handlers, overide them in your derived class
+		virtual void OnSelectDatasource( wxListEvent& event ) { event.Skip(); }
+		virtual void OnAddClick( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnRemoveClick( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnTypeSerialSelected( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnTypeNetSelected( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnNetProtocolSelected( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnBaudrateChoice( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnProtocolChoice( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnCrcCheck( wxCommandEvent& event ) { event.Skip(); }
@@ -78,13 +102,14 @@ class ConnectorSourceDlg : public wxDialog
 		virtual void OnCbOutput( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnRbOutput( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnBtnOStcs( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnApplyClick( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnCancelClick( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnOkClick( wxCommandEvent& event ) { event.Skip(); }
 		
 	
 	public:
 		
-		ConnectorSourceDlg( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Data source properties"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 550,480 ), long style = wxDEFAULT_DIALOG_STYLE ); 
+		ConnectorSourceDlg( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Data source properties"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 550,655 ), long style = wxDEFAULT_DIALOG_STYLE ); 
 		~ConnectorSourceDlg();
 	
 };
@@ -118,38 +143,6 @@ class SentenceListDlg : public wxDialog
 		
 		SentenceListDlg( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Sentences"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 284,361 ), long style = wxDEFAULT_DIALOG_STYLE ); 
 		~SentenceListDlg();
-	
-};
-
-///////////////////////////////////////////////////////////////////////////////
-/// Class ConnectorCfgDlg
-///////////////////////////////////////////////////////////////////////////////
-class ConnectorCfgDlg : public wxDialog 
-{
-	private:
-	
-	protected:
-		wxListBox* m_lbDatasources;
-		wxButton* m_buttonAdd;
-		wxButton* m_buttonEdit;
-		wxButton* m_buttonRemove;
-		wxStdDialogButtonSizer* m_sdbSizerDlgButtons;
-		wxButton* m_sdbSizerDlgButtonsOK;
-		wxButton* m_sdbSizerDlgButtonsCancel;
-		
-		// Virtual event handlers, overide them in your derived class
-		virtual void OnSelectDatasource( wxCommandEvent& event ) { event.Skip(); }
-		virtual void OnAddClick( wxCommandEvent& event ) { event.Skip(); }
-		virtual void OnEditClick( wxCommandEvent& event ) { event.Skip(); }
-		virtual void OnRemoveClick( wxCommandEvent& event ) { event.Skip(); }
-		virtual void OnCancelClick( wxCommandEvent& event ) { event.Skip(); }
-		virtual void OnOkClick( wxCommandEvent& event ) { event.Skip(); }
-		
-	
-	public:
-		
-		ConnectorCfgDlg( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Data sources"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 300,400 ), long style = wxDEFAULT_DIALOG_STYLE ); 
-		~ConnectorCfgDlg();
 	
 };
 
