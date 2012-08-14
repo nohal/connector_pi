@@ -144,7 +144,26 @@ void ConnectorSourceDlgImpl::SetConnectionParams(ConnectionParams *cp)
     m_cbRtsCts->SetValue(cp->RtsCts);
     m_cbXonXoff->SetValue(cp->XonXoff);
     m_choiceEOS->Select(cp->EOS);
-    SetFormToSerial(); //TODO
+
+    m_tNetAddress->SetValue(cp->NetworkAddress);
+    m_tNetPort->SetValue(wxString::Format(wxT("%i"), cp->NetworkPort));
+    if(cp->NetProtocol == TCP)
+        m_rbNetProtoTCP->SetValue(true);
+    else if (cp->NetProtocol == UDP)
+        m_rbNetProtoUDP->SetValue(true);
+    else
+        m_rbNetProtoGPSD->SetValue(true);
+
+    if ( cp->Type == Serial )
+    {
+        m_rbTypeSerial->SetValue( true );
+        SetFormToSerial();
+    }
+    else
+    {
+        m_rbTypeNet->SetValue( true );
+        SetFormToNet();
+    }
 }
 
 
@@ -187,15 +206,39 @@ void ConnectorSourceDlgImpl::OnRemoveClick( wxCommandEvent& event )
     }
     FillSourceList();
     m_sdbSizerDlgButtonsApply->Enable( false );
+    ShowCommon( false );
+    ShowNet( false );
+    ShowSerial( false );
 }
 
 bool ConnectorSourceDlgImpl::SaveConnectionParams()
 {
-    if ( m_comboPort->GetStringSelection() == wxEmptyString )
+    //TODO: The error handling is still way too naive... Same for input validation.
+    if ( m_rbTypeSerial->GetValue() && m_comboPort->GetStringSelection() == wxEmptyString )
     {
         wxMessageBox( _("You must select or enter the port..."), _("Error!") );
         return false;
     }
+    else if ( m_rbTypeNet->GetValue() && m_tNetAddress->GetValue() == wxEmptyString )
+    {
+        wxMessageBox( _("You must enter the address..."), _("Error!") );
+        return false;
+    }
+    
+    m_pConnectionParams->Valid = true;
+    if ( m_rbTypeSerial->GetValue() )
+        m_pConnectionParams->Type = Serial;
+    else
+        m_pConnectionParams->Type = Network;
+    m_pConnectionParams->NetworkAddress = m_tNetAddress->GetValue();
+    m_pConnectionParams->NetworkPort = wxAtoi(m_tNetPort->GetValue());
+    if ( m_rbNetProtoTCP->GetValue() )
+        m_pConnectionParams->NetProtocol = TCP;
+    else if ( m_rbNetProtoUDP->GetValue() )
+        m_pConnectionParams->NetProtocol = UDP;
+    else
+        m_pConnectionParams->NetProtocol = GPSD;
+
     m_pConnectionParams->Baudrate = wxAtoi( m_choiceBaudRate->GetStringSelection() );
     m_pConnectionParams->ChecksumCheck = m_cbCheckCRC->GetValue();
     m_pConnectionParams->InputSentenceList = wxStringTokenize( m_tcInputStc->GetValue() );
@@ -211,7 +254,7 @@ bool ConnectorSourceDlgImpl::SaveConnectionParams()
         m_pConnectionParams->OutputSentenceListType = BLACKLIST;
     m_pConnectionParams->Port = m_comboPort->GetStringSelection();
     m_pConnectionParams->Protocol = NMEA0183;
-    m_pConnectionParams->Wordlen = m_choiceDataBits->GetSelection();
+    m_pConnectionParams->Wordlen = wxAtoi(m_choiceDataBits->GetStringSelection());
     m_pConnectionParams->Parity = (ParityType)m_choiceParity->GetSelection();
     m_pConnectionParams->Stopbits = m_choiceStopBits->GetSelection() + 1;
     m_pConnectionParams->RtsCts = m_cbRtsCts->GetValue();

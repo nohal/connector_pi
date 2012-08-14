@@ -53,6 +53,19 @@ WX_DEFINE_ARRAY(SerialConnection *, wxArrayOfSerialConnection);
 //Type definitions
 typedef enum 
 {
+    Serial = 0,
+    Network = 1
+} ConnectionType;
+
+typedef enum 
+{
+    TCP = 0,
+    UDP = 1,
+    GPSD = 2
+} NetworkProtocol;
+
+typedef enum 
+{
     WHITELIST = 0,
     BLACKLIST = 1
 } ListType;
@@ -94,6 +107,11 @@ public:
     ConnectionParams();
     ConnectionParams(wxString configStr);
 
+    ConnectionType  Type;
+    NetworkProtocol NetProtocol;
+    wxString        NetworkAddress;
+    int             NetworkPort;
+
     DataProtocol    Protocol;
     wxString        Port;
     int             Baudrate;
@@ -118,6 +136,10 @@ public:
     wxString GetParametersStr();
     wxString GetOutputValueStr();
     wxString GetFiltersStr();
+
+    bool            Valid;
+private:
+    wxString FilterTypeToStr(ListType type);
 };
 
 //----------------------------------------------------------------------------------------------------------

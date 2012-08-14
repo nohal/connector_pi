@@ -38,23 +38,34 @@ ConnectionParams::ConnectionParams(wxString configStr)
 
 void ConnectionParams::Deserialize(wxString configStr)
 {
+    Valid = true;
     wxArrayString prms = wxStringTokenize(configStr, _T(";"));
-    Protocol = (DataProtocol)wxAtoi(prms[0]);
-    Port = prms[1];
-    Baudrate = wxAtoi(prms[2]);
-    Wordlen = 8 - wxAtoi(prms[3]);
-    Parity = (ParityType)wxAtoi(prms[4]);
-    Stopbits = wxAtoi(prms[5]);
-    RtsCts = !!wxAtoi(prms[6]);
-    XonXoff = !!wxAtoi(prms[7]);
-    EOS = (EOSType)wxAtoi(prms[8]);
-    ChecksumCheck = !!wxAtoi(prms[9]);
-    Output = !!wxAtoi(prms[10]);
-    InputSentenceListType = (ListType)wxAtoi(prms[11]);
-    InputSentenceList = wxStringTokenize(prms[12], _T(","));
-    OutputSentenceListType = (ListType)wxAtoi(prms[13]);
-    if (prms.Count() > 14) //If the list is empty, the tokenizer does not produce array item
-        OutputSentenceList = wxStringTokenize(prms[14], _T(","));
+    if ( prms.Count() < 18 )
+    {
+        Valid = false;
+        return; //Old short format, we dump it
+    }
+    Type = (ConnectionType)wxAtoi(prms[0]);
+    NetProtocol = (NetworkProtocol)wxAtoi(prms[1]);
+    NetworkAddress = prms[2];
+    NetworkPort = (ConnectionType)wxAtoi(prms[3]);
+    
+    Protocol = (DataProtocol)wxAtoi(prms[4]);
+    Port = prms[5];
+    Baudrate = wxAtoi(prms[6]);
+    Wordlen = wxAtoi(prms[7]);
+    Parity = (ParityType)wxAtoi(prms[8]);
+    Stopbits = wxAtoi(prms[9]);
+    RtsCts = !!wxAtoi(prms[10]);
+    XonXoff = !!wxAtoi(prms[11]);
+    EOS = (EOSType)wxAtoi(prms[12]);
+    ChecksumCheck = !!wxAtoi(prms[13]);
+    Output = !!wxAtoi(prms[14]);
+    InputSentenceListType = (ListType)wxAtoi(prms[15]);
+    InputSentenceList = wxStringTokenize(prms[16], _T(","));
+    OutputSentenceListType = (ListType)wxAtoi(prms[17]);
+    if (prms.Count() > 18) //If the list is empty, the tokenizer does not produce array item
+        OutputSentenceList = wxStringTokenize(prms[18], _T(","));
 }
 
 wxString ConnectionParams::Serialize()
@@ -73,13 +84,17 @@ wxString ConnectionParams::Serialize()
             ostcs.Append(_T(","));
         ostcs.Append(OutputSentenceList[i]);
     }
-    wxString ret = wxString::Format(_T("%d;%s;%d;%d;%d;%d;%d;%d;%d;%d;%d;%d;%s;%d;%s"), Protocol, Port.c_str(), Baudrate, Wordlen, Parity, Stopbits, RtsCts, XonXoff, EOS, ChecksumCheck, Output, InputSentenceListType, istcs.c_str(), OutputSentenceListType, ostcs.c_str());
+    wxString ret = wxString::Format(_T("%d;%d;%s;%d;%d;%s;%d;%d;%d;%d;%d;%d;%d;%d;%d;%d;%s;%d;%s"), Type, NetProtocol, NetworkAddress, NetworkPort, Protocol, Port.c_str(), Baudrate, Wordlen, Parity, Stopbits, RtsCts, XonXoff, EOS, ChecksumCheck, Output, InputSentenceListType, istcs.c_str(), OutputSentenceListType, ostcs.c_str());
 
     return ret;
 }
 
 ConnectionParams::ConnectionParams()
 {
+    Type = Serial;
+    NetProtocol = TCP;
+    NetworkAddress = wxEmptyString;
+    NetworkPort = 0;
     Protocol = NMEA0183;
     Port = wxEmptyString;
     Baudrate = 4800;
@@ -97,17 +112,31 @@ ConnectionParams::ConnectionParams()
 
 wxString ConnectionParams::GetSourceTypeStr()
 {
-    return _("Serial"); //TODO
+    if ( Type == Serial )
+        return _("Serial");
+    else
+        return _("Net");
 }
 
 wxString ConnectionParams::GetAddressStr()
 {
-    return Port; //TODO
+    if ( Type == Serial )
+        return Port;
+    else
+        return wxString::Format(_("%s:%d"), NetworkAddress.c_str(), NetworkPort);
 }
 
 wxString ConnectionParams::GetParametersStr()
 {
-    return wxString::Format(_T("%d, %d, %d, %d"), Baudrate, 8 - Wordlen, Parity, Stopbits); //TODO
+    if ( Type == Serial )
+        return wxString::Format(_T("%d, %d, %d, %d"), Baudrate, Wordlen, Parity, Stopbits);
+    else
+        if(NetProtocol == TCP)
+            return _("TCP");
+        else if (NetProtocol == UDP)
+            return _("UDP");
+        else
+            return _("GPSD");
 }
 
 wxString ConnectionParams::GetOutputValueStr()
@@ -116,6 +145,14 @@ wxString ConnectionParams::GetOutputValueStr()
         return _("Yes");
     else 
         return _("No");
+}
+
+wxString ConnectionParams::FilterTypeToStr(ListType type)
+{
+    if ( type == BLACKLIST )
+        return _("All but");
+    else
+        return _("Just ");
 }
 
 wxString ConnectionParams::GetFiltersStr()
@@ -134,7 +171,16 @@ wxString ConnectionParams::GetFiltersStr()
             ostcs.Append(_T(","));
         ostcs.Append(OutputSentenceList[i]);
     }
-    return  wxString::Format(_T("IN:%s OUT:%s"), istcs.c_str(), ostcs.c_str());
+    wxString ret = wxEmptyString;
+    if (istcs.Len() > 0)
+        ret.Append(wxString::Format(_T("In: %s %s"), FilterTypeToStr(InputSentenceListType).c_str(), istcs.c_str()));
+    else
+        ret.Append(_("In: None"));
+    if (ostcs.Len() > 0)
+        ret.Append(wxString::Format(_T(", Out: %s %s"), FilterTypeToStr(OutputSentenceListType).c_str(), ostcs.c_str()));
+    else
+        ret.Append(_(", Out: None"));
+    return  ret;
 }
 
 //ConnectionHandler implementation
@@ -183,6 +229,8 @@ void ConnectionHandler::CreateConnections(wxArrayOfConnPrm *configs)
     CloseAndDestroyAllConnections();
     for (size_t i = 0; i < configs->Count(); i++)
     {
+        if ( !configs->Item(i)->Valid )
+            break;
         Connections.Add(new SerialConnection(this));
         wxCharBuffer buffer = configs->Item(i)->Port.ToUTF8();
         wxSerialPort_DCS portconfig;
