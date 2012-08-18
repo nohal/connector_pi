@@ -31,15 +31,15 @@
 #include "serialconnection.h"
 
 //ConnectionParams implementation
-ConnectionParams::ConnectionParams(wxString configStr)
+ConnectionParams::ConnectionParams( wxString configStr )
 {
-    Deserialize(configStr);
+    Deserialize( configStr );
 }
 
 void ConnectionParams::Deserialize(wxString configStr)
 {
     Valid = true;
-    wxArrayString prms = wxStringTokenize(configStr, _T(";"));
+    wxArrayString prms = wxStringTokenize( configStr, _T(";") );
     if ( prms.Count() < 18 )
     {
         Valid = false;
@@ -66,25 +66,27 @@ void ConnectionParams::Deserialize(wxString configStr)
     OutputSentenceListType = (ListType)wxAtoi(prms[17]);
     if (prms.Count() > 18) //If the list is empty, the tokenizer does not produce array item
         OutputSentenceList = wxStringTokenize(prms[18], _T(","));
+    if (prms.Count() > 19)
+        Priority = wxAtoi(prms[19]);
 }
 
 wxString ConnectionParams::Serialize()
 {
     wxString istcs;
-    for(size_t i = 0; i < InputSentenceList.Count(); i++)
+    for( size_t i = 0; i < InputSentenceList.Count(); i++ )
     {
         if (i > 0)
-            istcs.Append(_T(","));
-        istcs.Append(InputSentenceList[i]);
+            istcs.Append( _T(",") );
+        istcs.Append( InputSentenceList[i] );
     }
     wxString ostcs;
-    for(size_t i = 0; i < OutputSentenceList.Count(); i++)
+    for( size_t i = 0; i < OutputSentenceList.Count(); i++ )
     {
         if (i > 0)
-            ostcs.Append(_T(","));
-        ostcs.Append(OutputSentenceList[i]);
+            ostcs.Append( _T(",") );
+        ostcs.Append( OutputSentenceList[i] );
     }
-    wxString ret = wxString::Format(_T("%d;%d;%s;%d;%d;%s;%d;%d;%d;%d;%d;%d;%d;%d;%d;%d;%s;%d;%s"), Type, NetProtocol, NetworkAddress.c_str(), NetworkPort, Protocol, Port.c_str(), Baudrate, Wordlen, Parity, Stopbits, RtsCts, XonXoff, EOS, ChecksumCheck, Output, InputSentenceListType, istcs.c_str(), OutputSentenceListType, ostcs.c_str());
+    wxString ret = wxString::Format( _T("%d;%d;%s;%d;%d;%s;%d;%d;%d;%d;%d;%d;%d;%d;%d;%d;%s;%d;%s;%d"), Type, NetProtocol, NetworkAddress.c_str(), NetworkPort, Protocol, Port.c_str(), Baudrate, Wordlen, Parity, Stopbits, RtsCts, XonXoff, EOS, ChecksumCheck, Output, InputSentenceListType, istcs.c_str(), OutputSentenceListType, ostcs.c_str(), Priority );
 
     return ret;
 }
@@ -108,6 +110,7 @@ ConnectionParams::ConnectionParams()
     Output = false;
     InputSentenceListType = WHITELIST;
     OutputSentenceListType = WHITELIST;
+    Priority = 0;
 }
 
 wxString ConnectionParams::GetSourceTypeStr()
@@ -123,15 +126,15 @@ wxString ConnectionParams::GetAddressStr()
     if ( Type == Serial )
         return Port;
     else
-        return wxString::Format(_("%s:%d"), NetworkAddress.c_str(), NetworkPort);
+        return wxString::Format( _("%s:%d"), NetworkAddress.c_str(), NetworkPort );
 }
 
 wxString ConnectionParams::GetParametersStr()
 {
     if ( Type == Serial )
-        return wxString::Format(_T("%d, %d, %d, %d"), Baudrate, Wordlen, Parity, Stopbits);
+        return wxString::Format( _T("%d, %d, %d, %d"), Baudrate, Wordlen, Parity, Stopbits );
     else
-        if(NetProtocol == TCP)
+        if ( NetProtocol == TCP )
             return _("TCP");
         else if (NetProtocol == UDP)
             return _("UDP");
@@ -141,7 +144,7 @@ wxString ConnectionParams::GetParametersStr()
 
 wxString ConnectionParams::GetOutputValueStr()
 {
-    if(Output)
+    if ( Output )
         return _("Yes");
     else 
         return _("No");
@@ -158,38 +161,38 @@ wxString ConnectionParams::FilterTypeToStr(ListType type)
 wxString ConnectionParams::GetFiltersStr()
 {
     wxString istcs;
-    for(size_t i = 0; i < InputSentenceList.Count(); i++)
+    for( size_t i = 0; i < InputSentenceList.Count(); i++ )
     {
-        if (i > 0)
-            istcs.Append(_T(","));
-        istcs.Append(InputSentenceList[i]);
+        if ( i > 0 )
+            istcs.Append( _T(",") );
+        istcs.Append( InputSentenceList[i] );
     }
     wxString ostcs;
-    for(size_t i = 0; i < OutputSentenceList.Count(); i++)
+    for( size_t i = 0; i < OutputSentenceList.Count(); i++ )
     {
-        if (i > 0)
-            ostcs.Append(_T(","));
-        ostcs.Append(OutputSentenceList[i]);
+        if ( i > 0 )
+            ostcs.Append( _T(",") );
+        ostcs.Append( OutputSentenceList[i] );
     }
     wxString ret = wxEmptyString;
-    if (istcs.Len() > 0)
-        ret.Append(wxString::Format(_T("In: %s %s"), FilterTypeToStr(InputSentenceListType).c_str(), istcs.c_str()));
+    if ( istcs.Len() > 0 )
+        ret.Append(wxString::Format( _T("In: %s %s"), FilterTypeToStr(InputSentenceListType).c_str(), istcs.c_str()) );
     else
-        ret.Append(_("In: None"));
-    if (ostcs.Len() > 0)
-        ret.Append(wxString::Format(_T(", Out: %s %s"), FilterTypeToStr(OutputSentenceListType).c_str(), ostcs.c_str()));
+        ret.Append( _("In: None") );
+    if ( ostcs.Len() > 0 )
+        ret.Append( wxString::Format( _T(", Out: %s %s"), FilterTypeToStr(OutputSentenceListType).c_str(), ostcs.c_str() ) );
     else
-        ret.Append(_(", Out: None"));
+        ret.Append( _(", Out: None") );
     return  ret;
 }
 
 //ConnectionHandler implementation
-void ConnectionHandler::OnTimer(wxTimerEvent& event)
+void ConnectionHandler::OnTimer( wxTimerEvent& event )
 { 
-    if (busy) 
+    if ( busy ) 
         return; 
     busy = true; 
-    wxLogMessage(_T("timer"));
+    wxLogMessage( _T("timer") );
     ReadAllPorts();
     //event.Skip();
     busy = false; 
@@ -197,19 +200,19 @@ void ConnectionHandler::OnTimer(wxTimerEvent& event)
 
 void ConnectionHandler::ReadAllPorts()
 {
-    for (size_t i = 0; i < Connections.Count(); i++)
+    for ( size_t i = 0; i < Connections.Count(); i++ )
     {
-        if(Connections[i]->IsOpen()) 
+        if ( Connections[i]->IsOpen() )
         {
             char b[8192];
-            memset(b, 0, sizeof(b));
+            memset( b, 0, sizeof(b) );
             // read maximum 80 Bytes, Read never blocks, so we can
             // do it whenever we wanted (you can decrease the timer
             // interval or growup the buffer size, if you have many
             // datas and a high speed
-            int n = Connections[i]->ReadDevice(b,sizeof(b));
-            if(n > 0) {
-                Connections[i]->PushBuffer(wxString::FromAscii(b));
+            int n = Connections[i]->ReadDevice( b, sizeof(b) );
+            if ( n > 0 ) {
+                Connections[i]->PushBuffer( wxString::FromAscii(b) );
             }
         }
     }
@@ -217,21 +220,21 @@ void ConnectionHandler::ReadAllPorts()
 
 void ConnectionHandler::CloseAndDestroyAllConnections()
 {
-    for (size_t i = 0; i < Connections.Count(); i++)
+    for ( size_t i = 0; i < Connections.Count(); i++ )
     {
         Connections[i]->CloseDevice();
     }
     Connections.Clear();
 }
 
-void ConnectionHandler::CreateConnections(wxArrayOfConnPrm *configs)
+void ConnectionHandler::CreateConnections( wxArrayOfConnPrm *configs )
 {
     CloseAndDestroyAllConnections();
-    for (size_t i = 0; i < configs->Count(); i++)
+    for ( size_t i = 0; i < configs->Count(); i++ )
     {
         if ( !configs->Item(i)->Valid )
             break;
-        Connections.Add(new SerialConnection(this));
+        Connections.Add( new SerialConnection(this) );
         wxCharBuffer buffer = configs->Item(i)->Port.ToUTF8();
         wxSerialPort_DCS portconfig;
         portconfig.baud = (wxBaud)configs->Item(i)->Baudrate;
@@ -245,63 +248,63 @@ void ConnectionHandler::CreateConnections(wxArrayOfConnPrm *configs)
         Connections[i]->OutputFilterType = configs->Item(i)->OutputSentenceListType;
         Connections[i]->InputFilterList = configs->Item(i)->InputSentenceList;
         Connections[i]->InputFilterType = configs->Item(i)->InputSentenceListType;
-        Connections[i]->SetEos(wxString::FromAscii(EOSVals[configs->Item(i)->EOS]));
+        Connections[i]->SetEos( wxString::FromAscii( EOSVals[configs->Item(i)->EOS] ) );
         //TODO: Set the other params
-        Connections[i]->OpenDevice(buffer.data(), &portconfig);
+        Connections[i]->OpenDevice( buffer.data(), &portconfig );
     }
 }
 
-void ConnectionHandler::SendNMEAMessage(wxString &message, wxString &source)
+void ConnectionHandler::SendNMEAMessage( wxString &message, wxString &source )
 {
-    if (source != CONNECTOR_PI) //Until we get rid of the current core implementation, accepting these causes an event storm
-        DistributeNMEAMessage(message, source);
+    if ( source != CONNECTOR_PI ) //Until we get rid of the current core implementation, accepting these causes an event storm
+        DistributeNMEAMessage( message, source );
 }
 
-void ConnectionHandler::DistributeNMEAMessage(wxString &message, wxString &sourcePort)
+void ConnectionHandler::DistributeNMEAMessage( wxString &message, wxString &sourcePort )
 {
-    for (size_t i = 0; i < Connections.Count(); i++)
+    for ( size_t i = 0; i < Connections.Count(); i++ )
     {
         SerialConnection *conn = Connections[i];
-        if (sourcePort != conn->GetPortName()) //Not repeat to self
-            conn->SendNMEAMessage(message, sourcePort);
+        if ( sourcePort != conn->GetPortName() ) //Not repeat to self
+            conn->SendNMEAMessage( message, sourcePort );
     }
-    p_plugin->SendSentenceToCore(message.Append(_T("\r\n")));
+    p_plugin->SendSentenceToCore( message.Append( _T("\r\n") ) );
 }
 
 //SerialConnection implementation
 
 int SerialConnection::OpenDevice( char* dev, void* dcs )
 {
-    int ret = m_dev.Open(dev, dcs);
-    m_portName = wxString::FromUTF8(dev);
+    int ret = m_dev.Open( dev, dcs );
+    m_portName = wxString::FromUTF8( dev );
     return ret;
 };
 
 int SerialConnection::ReadDevice( char* buf,size_t len )
 {
-    int rd = m_dev.Read(buf,len);
+    int rd = m_dev.Read( buf, len );
     return rd;
 };
 
 void SerialConnection::ResetDevice()
 {
-    if(m_dev.IsOpen())
-        m_dev.SendBreak(0);
+    if ( m_dev.IsOpen() )
+        m_dev.SendBreak( 0 );
 };
 
 bool SerialConnection::SetBaudrate( wxBaud baudrate )
 {
-    if(m_dev.IsOpen())
-	   return m_dev.SetBaudRate(baudrate) == 0;
+    if ( m_dev.IsOpen() )
+	   return m_dev.SetBaudRate( baudrate ) == 0;
     return false;
 };
 
 void SerialConnection::SetDTR( bool state ) 
 {
-    if(!state)
-        m_dev.ClrLineState(wxSERIAL_LINESTATE_DTR);
+    if ( !state )
+        m_dev.ClrLineState( wxSERIAL_LINESTATE_DTR );
     else 
-        m_dev.SetLineState(wxSERIAL_LINESTATE_DTR);
+        m_dev.SetLineState( wxSERIAL_LINESTATE_DTR );
     // windows doesn't allow to query the state of
     // RTS and DTR, so we must notice the state of both
     m_dtr = state;
@@ -309,10 +312,10 @@ void SerialConnection::SetDTR( bool state )
 
 void SerialConnection::SetRTS( bool state )
 {
-    if(!state)
-        m_dev.ClrLineState(wxSERIAL_LINESTATE_RTS);
+    if ( !state )
+        m_dev.ClrLineState( wxSERIAL_LINESTATE_RTS );
     else
-        m_dev.SetLineState(wxSERIAL_LINESTATE_RTS);
+        m_dev.SetLineState( wxSERIAL_LINESTATE_RTS );
     // windows doesn't allow to query the state of
     // RTS and DTR, so we must notice the state of both
     m_rts = state;
@@ -320,38 +323,38 @@ void SerialConnection::SetRTS( bool state )
 
 int SerialConnection::WriteDevice( char* buf, size_t len )
 {
-    int rd = m_dev.Write(buf,len);
+    int rd = m_dev.Write( buf, len );
     return rd;
 };
 
-void SerialConnection::SendNMEAMessage(wxString &message, wxString &source)
+void SerialConnection::SendNMEAMessage( wxString &message, wxString &source )
 {
-    if (!IsOpen())
+    if ( !IsOpen() )
         return;
-    if (FilterOutput(message, source))
+    if ( FilterOutput( message, source ) )
     {
         wxCharBuffer buffer = message.ToAscii();
-        WriteDevice( buffer.data(), strlen(buffer.data()) );
+        WriteDevice( buffer.data(), strlen( buffer.data() ) );
         buffer = m_EOS.ToAscii();
-        WriteDevice( buffer.data(), strlen(buffer.data()) );
+        WriteDevice( buffer.data(), strlen( buffer.data() ) );
     }
 }
 
-bool SerialConnection::FilterOutput(wxString &message, wxString &source)
+bool SerialConnection::FilterOutput( wxString &message, wxString &source )
 {
-    if (OutputAllowed)
+    if ( OutputAllowed )
     {
-        if (OutputFilterList.Count() == 0)
+        if ( OutputFilterList.Count() == 0 )
             return true;
-        for (size_t i = 0; i < OutputFilterList.Count(); i++)
-            if (OutputFilterList[i] == message.SubString(3,3) || OutputFilterList[i] == message.SubString(1,2) || OutputFilterList[i] == message.SubString(1,5))
+        for ( size_t i = 0; i < OutputFilterList.Count(); i++ )
+            if ( OutputFilterList[i] == message.SubString(3,3) || OutputFilterList[i] == message.SubString(1,2) || OutputFilterList[i] == message.SubString(1,5) )
             {
-                if (OutputFilterType == BLACKLIST)
+                if ( OutputFilterType == BLACKLIST )
                     return false;
                 else
                     return true;
             }
-        if (OutputFilterType == BLACKLIST)
+        if ( OutputFilterType == BLACKLIST )
             return true;
         else
             return false;
@@ -359,43 +362,43 @@ bool SerialConnection::FilterOutput(wxString &message, wxString &source)
     return false;
 }
 
-bool SerialConnection::FilterInput(wxString &message, wxString &source)
+bool SerialConnection::FilterInput( wxString &message, wxString &source )
 {
-    if (InputFilterList.Count() == 0)
+    if ( InputFilterList.Count() == 0 )
             return true;
-    for (size_t i = 0; i < InputFilterList.Count(); i++)
-        if (InputFilterList[i] == message.SubString(3,3) || InputFilterList[i] == message.SubString(1,2) || InputFilterList[i] == message.SubString(1,5))
+    for ( size_t i = 0; i < InputFilterList.Count(); i++ )
+        if ( InputFilterList[i] == message.SubString(3,3) || InputFilterList[i] == message.SubString(1,2) || InputFilterList[i] == message.SubString(1,5) )
         {
-            if (InputFilterType == BLACKLIST)
+            if ( InputFilterType == BLACKLIST )
                 return false;
             else
                 return true;
         }
-    if (InputFilterType == BLACKLIST)
+    if ( InputFilterType == BLACKLIST )
         return true;
     else
         return false;
 }
 
-void SerialConnection::PushBuffer(wxString buf)
+void SerialConnection::PushBuffer( wxString buf )
 {
-    m_buffer.Append(buf);
+    m_buffer.Append( buf );
     int boundary = SentenceBoundary();
-    while(boundary > -1)
+    while( boundary > -1 )
     {
-        wxString msg = m_buffer.Left(boundary);
-        m_buffer.Remove(0, boundary + m_EOS.Length());
+        wxString msg = m_buffer.Left( boundary );
+        m_buffer.Remove( 0, boundary + m_EOS.Length() );
         //TODO: honor the CRC if we should
-        if (FilterInput(msg, m_portName))
-            m_pHandler->DistributeNMEAMessage(msg, m_portName);
+        if ( FilterInput( msg, m_portName ) )
+            m_pHandler->DistributeNMEAMessage( msg, m_portName );
         boundary = SentenceBoundary();
     }
 }
 
 int SerialConnection::SentenceBoundary()
 {
-    if (m_EOS != wxEmptyString)
-        return m_buffer.Find(m_EOS);
+    if ( m_EOS != wxEmptyString )
+        return m_buffer.Find( m_EOS );
     //TODO: handle the situation when EOL is not used at all and errors (like we already have 999 chars and still no EOL)...
     return -2;
 }

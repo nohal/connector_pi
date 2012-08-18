@@ -175,14 +175,28 @@ ConnectorSourceDlg::ConnectorSourceDlg( wxWindow* parent, wxWindowID id, const w
 	
 	gSizerSerProps->Add( m_choiceSerialProtocol, 1, wxEXPAND|wxTOP, 5 );
 	
-	
-	sbSizerConnectionProps->Add( gSizerSerProps, 0, wxEXPAND, 5 );
-	
 	m_cbCheckCRC = new wxCheckBox( this, wxID_ANY, _("Control checksum"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_cbCheckCRC->SetValue(true); 
 	m_cbCheckCRC->SetToolTip( _("If checked, only the sentences with a valid checksum are passed through") );
 	
-	sbSizerConnectionProps->Add( m_cbCheckCRC, 0, wxALL, 5 );
+	gSizerSerProps->Add( m_cbCheckCRC, 0, wxALL, 5 );
+	
+	m_staticText12 = new wxStaticText( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText12->Wrap( -1 );
+	gSizerSerProps->Add( m_staticText12, 0, wxALL, 5 );
+	
+	m_staticText13 = new wxStaticText( this, wxID_ANY, _("Priority"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText13->Wrap( -1 );
+	gSizerSerProps->Add( m_staticText13, 0, wxALL, 5 );
+	
+	wxString m_choicePriorityChoices[] = { _("0"), _("1"), _("2"), _("3"), _("4"), _("5"), _("6"), _("7"), _("8"), _("9") };
+	int m_choicePriorityNChoices = sizeof( m_choicePriorityChoices ) / sizeof( wxString );
+	m_choicePriority = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_choicePriorityNChoices, m_choicePriorityChoices, 0 );
+	m_choicePriority->SetSelection( 0 );
+	gSizerSerProps->Add( m_choicePriority, 0, wxEXPAND|wxTOP, 5 );
+	
+	
+	sbSizerConnectionProps->Add( gSizerSerProps, 0, wxEXPAND, 5 );
 	
 	wxBoxSizer* bSizer9;
 	bSizer9 = new wxBoxSizer( wxHORIZONTAL );

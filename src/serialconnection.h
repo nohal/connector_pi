@@ -127,6 +127,7 @@ public:
     wxArrayString   InputSentenceList;
     ListType        OutputSentenceListType;
     wxArrayString   OutputSentenceList;
+    int             Priority;
 
     wxString        Serialize();
     void            Deserialize(wxString configStr);
