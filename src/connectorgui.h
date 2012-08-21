@@ -74,7 +74,7 @@ class ConnectorSourceDlg : public wxDialog
 		wxChoice* m_choiceSerialProtocol;
 		wxCheckBox* m_cbCheckCRC;
 		wxStaticText* m_staticText12;
-		wxStaticText* m_staticText13;
+		wxStaticText* m_stPriority;
 		wxChoice* m_choicePriority;
 		wxRadioButton* m_rbIAccept;
 		wxRadioButton* m_rbIIgnore;

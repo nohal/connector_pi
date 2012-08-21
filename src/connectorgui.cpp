@@ -185,9 +185,9 @@ ConnectorSourceDlg::ConnectorSourceDlg( wxWindow* parent, wxWindowID id, const w
 	m_staticText12->Wrap( -1 );
 	gSizerSerProps->Add( m_staticText12, 0, wxALL, 5 );
 	
-	m_staticText13 = new wxStaticText( this, wxID_ANY, _("Priority"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_staticText13->Wrap( -1 );
-	gSizerSerProps->Add( m_staticText13, 0, wxALL, 5 );
+	m_stPriority = new wxStaticText( this, wxID_ANY, _("Priority"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_stPriority->Wrap( -1 );
+	gSizerSerProps->Add( m_stPriority, 0, wxALL, 5 );
 	
 	wxString m_choicePriorityChoices[] = { _("0"), _("1"), _("2"), _("3"), _("4"), _("5"), _("6"), _("7"), _("8"), _("9") };
 	int m_choicePriorityNChoices = sizeof( m_choicePriorityChoices ) / sizeof( wxString );

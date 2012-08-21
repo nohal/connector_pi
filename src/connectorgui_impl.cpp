@@ -316,6 +316,8 @@ void ConnectorSourceDlgImpl::ShowCommon(bool visible)
         m_tcOutputStc->Show();
         m_btnOutputStcList->Show();
         m_cbOutput->Show();
+        m_choicePriority->Show();
+        m_stPriority->Show();
     }
     else
     {
@@ -330,6 +332,8 @@ void ConnectorSourceDlgImpl::ShowCommon(bool visible)
         m_tcOutputStc->Hide();
         m_btnOutputStcList->Hide();
         m_cbOutput->Hide();
+        m_choicePriority->Hide();
+        m_stPriority->Hide();
     }
 }
 
