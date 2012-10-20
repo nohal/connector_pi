@@ -29,7 +29,7 @@
 #include <wx/tokenzr.h>
 
 #include "serialconnection.h"
-
+static const char * EOSVals[5] = { "\r\n", "\n", "\r", "\n\r", "" };
 //ConnectionParams implementation
 ConnectionParams::ConnectionParams( wxString configStr )
 {

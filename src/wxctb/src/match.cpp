@@ -214,7 +214,7 @@ static int match_one(S_MATCH* sm,
 		  }
 		  MPSH(sm,*string);
 		  string++;
-		  if(sm->n == sm->m == sm->i) {
+		  if((sm->n == sm->m) == (sm->i)) {
 			 return 1;
 		  }
 	   }

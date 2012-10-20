@@ -253,7 +253,7 @@ bool ConnectorSourceDlgImpl::SaveConnectionParams()
     else
         m_pConnectionParams->OutputSentenceListType = BLACKLIST;
     m_pConnectionParams->Port = m_comboPort->GetStringSelection();
-    m_pConnectionParams->Protocol = NMEA0183;
+    m_pConnectionParams->Protocol = (DataProtocol)m_choiceSerialProtocol->GetSelection() ;
     m_pConnectionParams->Wordlen = wxAtoi(m_choiceDataBits->GetStringSelection());
     m_pConnectionParams->Parity = (ParityType)m_choiceParity->GetSelection();
     m_pConnectionParams->Stopbits = m_choiceStopBits->GetSelection() + 1;
@@ -524,7 +524,7 @@ wxArrayString ConnectorSourceDlgImpl::ScanPorts()
     CEnumerateSerial::UsingGetDefaultCommConfig(detectedports);
 #endif
 
-    for(int i=0; i < ( sizeof( ports ) >> 2 ); i++, progress.Update( i ) ) {
+    for(unsigned int i=0; i < ( sizeof( ports ) >> 2 ); i++, progress.Update( i ) ) {
 #if !defined (__WIN32__)
         if(com.Open(ports[i]) < 0) {
             continue;
