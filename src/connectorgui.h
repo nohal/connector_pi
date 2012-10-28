@@ -112,7 +112,7 @@ class ConnectorSourceDlg : public wxDialog
 	
 	public:
 		
-		ConnectorSourceDlg( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Data source properties"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 550,655 ), long style = wxDEFAULT_DIALOG_STYLE ); 
+		ConnectorSourceDlg( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Data source properties"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 800,655 ), long style = wxDEFAULT_DIALOG_STYLE ); 
 		~ConnectorSourceDlg();
 	
 };
