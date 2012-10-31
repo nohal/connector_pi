@@ -110,6 +110,8 @@ SET(SRC_CONNECTOR
 	    src/connectorgui_impl.cpp
 	    src/serialconnection.h
 	    src/serialconnection.cpp
+            src/Seatalk.cpp
+            src/Seatalk.h
 	)
 
 SET(SRC_NMEA0183

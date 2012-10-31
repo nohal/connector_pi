@@ -4,22 +4,27 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+//#include <string.h>
 #include <wx/string.h>
 #include <vector>
 
 
 
-#include "nmea0183.h"
+#include "cnmea0183/nmea0183.h"
 
 using namespace std;
 
 
 
 
+StkSerialConnection::StkSerialConnection(ConnectionHandler *handler):SerialConnection(handler) 
+{
+	
+}
 
-
-
+StkSerialConnection::~StkSerialConnection()
+{ 
+}
 void StkSerialConnection::stk(unsigned char tre[255])
 {
 	CNMEA0183 cm_nmea ;
@@ -42,7 +47,7 @@ switch (tre[0])
 			unit = wxT("C");
 			cm_nmea.Mtw.UnitOfMeasurement = unit;
 			cm_nmea.Mtw.Write(snt);
-			PushNMEABuffer(snt.Sentence);
+			m_buffer.Append(snt.Sentence);
 			break;
 			
 		case 0x10 : // ApW direction
@@ -59,7 +64,7 @@ switch (tre[0])
 			if ((tre[2]& 0x80) ==0)cm_nmea.Mwv.WindSpeedUnits= wxT("K");
 			cm_nmea.Mwv.IsDataValid = NTrue;
 			cm_nmea.Mwv.Write(snt);
-			PushNMEABuffer(snt.Sentence);
+			m_buffer.Append(snt.Sentence);
 		break;
 		
 		case 0x00 : // depth
@@ -68,7 +73,7 @@ switch (tre[0])
 			cm_nmea.Dpt.DepthMeters = t * 0.3 ;
 			cm_nmea.Dpt.OffsetFromTransducerMeters = 0;
 			cm_nmea.Dpt.Write(snt);
-			PushNMEABuffer(snt.Sentence);
+			m_buffer.Append(snt.Sentence);
 		break;
 		
 		case 0x99 : // hdg
@@ -91,7 +96,7 @@ switch (tre[0])
 		cm_nmea.cHdg.MagneticDeviationDegrees  = 0  ;
 		cm_nmea.cHdg.MagneticDeviationDirection = East  ;
 		cm_nmea.cHdg.Write(snt);
-		PushNMEABuffer(snt.Sentence);
+		m_buffer.Append(snt.Sentence);
 		break;
 		
 		default:
@@ -154,9 +159,27 @@ bool StkSerialConnection::getParity(unsigned int n)
     }
     return !parity;
 }
+void StkSerialConnection::PushBuffer( const char *b, unsigned int l )
+{
+	// Stealk to NMEA0183 conversion
+    
+	received( b,l );
+	
+	//
+    int boundary = SentenceBoundary();
+    while( boundary > -1 )
+    {
+        wxString msg = m_buffer.Left( boundary );
+        m_buffer.Remove( 0, boundary + m_EOS.Length() );
+        //TODO: honor the CRC if we should
+        if ( FilterInput( msg, m_portName ) )
+            m_pHandler->DistributeNMEAMessage( msg, m_portName );
+        boundary = SentenceBoundary();
+    }
+}
 
 // 
-// callback receive data
+
 
 void StkSerialConnection::received(const char *data, unsigned int len)
 {

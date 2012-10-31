@@ -169,17 +169,20 @@ void ConnectorSourceDlgImpl::SetConnectionParams(ConnectionParams *cp)
 
 void ConnectorSourceDlgImpl::OnSelectDatasource( wxListEvent& event )
 {
-    SetConnectionParams(m_pPlugin->m_pConnectionParams->Item(event.GetIndex()));
+    m_lastUsrAct = FROMSELECT;
+	SetConnectionParams(m_pPlugin->m_pConnectionParams->Item(event.GetIndex()));
     m_buttonRemove->Enable();
     m_sdbSizerDlgButtonsApply->Enable();
+	 params_saved = false; //just to avoid test on each parameter if it has changed
     event.Skip();
 }
 
 void ConnectorSourceDlgImpl::OnAddClick( wxCommandEvent& event )
 {
-    ConnectionParams *cp = new ConnectionParams();
+    m_lastUsrAct= FROMADD;
+	ConnectionParams *cp = new ConnectionParams();
     SetConnectionParams( cp );
-    SetFormToSerial();
+   // SetFormToSerial();
     params_saved = false;
 
     long itemIndex = -1;
@@ -267,9 +270,10 @@ void ConnectorSourceDlgImpl::OnOkClick( wxCommandEvent& event )
 {
     if(SaveConnectionParams() && !params_saved)
     {
-        m_pPlugin->m_pConnectionParams->Add(m_pConnectionParams);
+        if (m_lastUsrAct == FROMADD)m_pPlugin->m_pConnectionParams->Add(m_pConnectionParams);
         params_saved = true;
     }
+	m_pPlugin->connectionhandler->CreateConnections(m_pPlugin->m_pConnectionParams);
     event.Skip();
 }
 
@@ -278,13 +282,15 @@ void ConnectorSourceDlgImpl::OnApplyClick( wxCommandEvent& event )
     long itemIndex = m_lcSources->GetNextItem( -1, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED );
     if(SaveConnectionParams() && !params_saved)
     {
-        m_pPlugin->m_pConnectionParams->Add(m_pConnectionParams);
+        if (m_lastUsrAct == FROMADD)m_pPlugin->m_pConnectionParams->Add(m_pConnectionParams);
         params_saved = true;
         itemIndex = m_pPlugin->m_pConnectionParams->Count() - 1;
     }
     FillSourceList();
     m_lcSources->SetItemState(itemIndex, wxLIST_STATE_SELECTED, wxLIST_STATE_SELECTED);
-    event.Skip();
+    
+	m_pPlugin->connectionhandler->CreateConnections(m_pPlugin->m_pConnectionParams);
+	event.Skip();
 }
 
 void ConnectorSourceDlgImpl::OnBtnIStcs( wxCommandEvent& event )

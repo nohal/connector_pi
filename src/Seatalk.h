@@ -41,10 +41,9 @@
 
 
 //Forward declarations
-class connector_pi;
-class ConnectionParams;
-class SerialConnection;
 
+class SerialConnection;
+class ConnectionHandler;
 
 //Type definitions
 
@@ -53,15 +52,22 @@ class SerialConnection;
 //----------------------------------------------------------------------------------------------------------
 //    Connection parameters class
 //----------------------------------------------------------------------------------------------------------
-class StkSerialConnection : SerialConnection
+class StkSerialConnection : public SerialConnection
 {
 public:
-    void            PushBuffer(wxString buf);
+
+	StkSerialConnection(ConnectionHandler *handler) ;
+	~StkSerialConnection();
+	
+    void PushBuffer(const char * b, unsigned int l);
+	
 private:
-	void StkSerialConnection::stk(unsigned char tre[255]);
-	void StkSerialConnection::seatalk(unsigned char d, bool cde) ;
-	bool StkSerialConnection::getParity(unsigned int n);
-	void StkSerialConnection::received(const char *data, unsigned int len)
+
+	void stk(unsigned char tre[255]);
+	void seatalk(unsigned char d, bool cde) ;
+	bool getParity(unsigned int n);
+	void received(const char *data, unsigned int len);
+	wxString m_sbuffer;
     unsigned long vent ;
 };
 

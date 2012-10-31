@@ -382,7 +382,8 @@ int quoted_char(S_MATCH* sm,char** cp)
 	   SBIT(**cp,sm->mtbl);	
 	   break;
     }
-    *cp++;
+   // *cp++;
+	
     return 0;
 }
 
