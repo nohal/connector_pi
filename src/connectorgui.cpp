@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////
-// C++ code generated with wxFormBuilder (version Apr 10 2012)
+// C++ code generated with wxFormBuilder (version Sep  5 2012)
 // http://www.wxformbuilder.org/
 //
 // PLEASE DO "NOT" EDIT THIS FILE!
@@ -170,9 +170,7 @@ ConnectorSourceDlg::ConnectorSourceDlg( wxWindow* parent, wxWindowID id, const w
 	wxString m_choiceSerialProtocolChoices[] = { _("NMEA 0183"), _("NMEA 2000"), _("Seatalk") };
 	int m_choiceSerialProtocolNChoices = sizeof( m_choiceSerialProtocolChoices ) / sizeof( wxString );
 	m_choiceSerialProtocol = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_choiceSerialProtocolNChoices, m_choiceSerialProtocolChoices, 0 );
-	m_choiceSerialProtocol->SetSelection( 0 );
-	m_choiceSerialProtocol->Enable( false );
-	
+	m_choiceSerialProtocol->SetSelection( 1 );
 	gSizerSerProps->Add( m_choiceSerialProtocol, 1, wxEXPAND|wxTOP, 5 );
 	
 	m_cbCheckCRC = new wxCheckBox( this, wxID_ANY, _("Control checksum"), wxDefaultPosition, wxDefaultSize, 0 );

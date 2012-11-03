@@ -85,7 +85,7 @@ connector_pi::connector_pi(void *ppimgr)
 }
 
 wxBaud baudrate = wxBAUD_4800;
-char *devname = wxCOM1;
+const char *devname = wxCOM1;
 int timeout = 1000;
 
 int connector_pi::Init(void)
@@ -249,5 +249,5 @@ void connector_pi::SetAISSentence(wxString &sentence, wxString &source)
 
 void connector_pi::SendSentenceToCore(wxString &msg)
 {
-    PushNMEABufferEx(msg, CONNECTOR_PI);
+    PushNMEABuffer(msg);
 }

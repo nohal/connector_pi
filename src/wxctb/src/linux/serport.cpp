@@ -217,7 +217,12 @@ int wxSerialPort::OpenDevice(const char* devname, void* dcs)
 
 	   t.c_lflag &= ~(ICANON | ECHO | ISIG | IEXTEN);
 	   t.c_iflag &= ~(BRKINT | ICRNL | INPCK | ISTRIP | IXON | IXOFF | IXANY);
-	   t.c_iflag |= IGNPAR;
+//if parity , parity is checked and marked	   
+	   if (t.c_cflag & PARENB){
+		   t.c_iflag |= (PARMRK | INPCK);
+		   t.c_iflag &= ~IGNPAR;
+	   }else t.c_iflag |= IGNPAR;
+	   
 	   t.c_oflag &= ~OPOST;
 
 	   if(m_dcs.xonxoff == true) {

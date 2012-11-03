@@ -214,7 +214,7 @@ static int match_one(S_MATCH* sm,
 		  }
 		  MPSH(sm,*string);
 		  string++;
-		  if(sm->n == sm->m == sm->i) {
+		  if((sm->n == sm->m) == (sm->i)) {
 			 return 1;
 		  }
 	   }
@@ -382,7 +382,8 @@ int quoted_char(S_MATCH* sm,char** cp)
 	   SBIT(**cp,sm->mtbl);	
 	   break;
     }
-    *cp++;
+   // *cp++;
+	
     return 0;
 }
 

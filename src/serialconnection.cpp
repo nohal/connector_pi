@@ -29,7 +29,8 @@
 #include <wx/tokenzr.h>
 
 #include "serialconnection.h"
-
+#include "Seatalk.h"
+static const char * EOSVals[5] = { "\r\n", "\n", "\r", "\n\r", "" };
 //ConnectionParams implementation
 ConnectionParams::ConnectionParams( wxString configStr )
 {
@@ -192,7 +193,7 @@ void ConnectionHandler::OnTimer( wxTimerEvent& event )
     if ( busy ) 
         return; 
     busy = true; 
-    wxLogMessage( _T("timer") );
+    //wxLogMessage( _T("timer") );
     ReadAllPorts();
     //event.Skip();
     busy = false; 
@@ -212,7 +213,8 @@ void ConnectionHandler::ReadAllPorts()
             // datas and a high speed
             int n = Connections[i]->ReadDevice( b, sizeof(b) );
             if ( n > 0 ) {
-                Connections[i]->PushBuffer( wxString::FromAscii(b) );
+				if (Connections[i]->Protocol == SEATALK )Connections[i]->PushBuffer( &b[0], sizeof(b));
+                else Connections[i]->PushBuffer( &b[0], sizeof(b) );
             }
         }
     }
@@ -234,7 +236,8 @@ void ConnectionHandler::CreateConnections( wxArrayOfConnPrm *configs )
     {
         if ( !configs->Item(i)->Valid )
             break;
-        Connections.Add( new SerialConnection(this) );
+        if ( configs->Item(i)->Protocol == SEATALK ) Connections.Add( new StkSerialConnection(this) );
+		else Connections.Add( new SerialConnection(this) );
         wxCharBuffer buffer = configs->Item(i)->Port.ToUTF8();
         wxSerialPort_DCS portconfig;
         portconfig.baud = (wxBaud)configs->Item(i)->Baudrate;
@@ -250,6 +253,7 @@ void ConnectionHandler::CreateConnections( wxArrayOfConnPrm *configs )
         Connections[i]->InputFilterType = configs->Item(i)->InputSentenceListType;
         Connections[i]->SetEos( wxString::FromAscii( EOSVals[configs->Item(i)->EOS] ) );
         //TODO: Set the other params
+		 Connections[i]->Protocol = configs->Item(i)->Protocol;
         Connections[i]->OpenDevice( buffer.data(), &portconfig );
     }
 }
@@ -380,9 +384,9 @@ bool SerialConnection::FilterInput( wxString &message, wxString &source )
         return false;
 }
 
-void SerialConnection::PushBuffer( wxString buf )
+void SerialConnection::PushBuffer( const char * b, unsigned int l )
 {
-    m_buffer.Append( buf );
+    m_buffer.Append(wxString::FromAscii(b) );
     int boundary = SentenceBoundary();
     while( boundary > -1 )
     {

@@ -110,8 +110,75 @@ SET(SRC_CONNECTOR
 	    src/connectorgui_impl.cpp
 	    src/serialconnection.h
 	    src/serialconnection.cpp
+            src/Seatalk.cpp
+            src/Seatalk.h
 	)
-ADD_LIBRARY(${PACKAGE_NAME} SHARED ${SRC_CONNECTOR} ${SRC_WXCTB} ${SRC_WXCTB_PLATFORM})
+
+SET(SRC_NMEA0183
+	src/cnmea0183/LatLong.hpp
+	src/cnmea0183/latlong.cpp
+	src/cnmea0183/long.cpp
+	src/cnmea0183/nmea0183.cpp
+	src/cnmea0183/nmea0183.hpp
+	src/cnmea0183/nmea0183.h
+	src/cnmea0183/Response.hpp
+	src/cnmea0183/response.cpp
+	src/cnmea0183/RMB.hpp
+	src/cnmea0183/rmb.cpp
+	src/cnmea0183/Sentence.hpp
+	src/cnmea0183/sentence.cpp
+	src/cnmea0183/talkerid.cpp
+	src/cnmea0183/RMC.HPP
+	src/cnmea0183/rmc.cpp
+	src/cnmea0183/hexvalue.cpp
+	src/cnmea0183/lat.cpp
+	src/cnmea0183/expid.cpp
+	src/cnmea0183/wpl.hpp
+	src/cnmea0183/wpl.cpp
+	src/cnmea0183/rte.hpp
+	src/cnmea0183/rte.cpp
+	src/cnmea0183/hdt.hpp
+	src/cnmea0183/hdt.cpp
+	src/cnmea0183/hdg.hpp
+	src/cnmea0183/hdg.cpp
+	src/cnmea0183/hdm.hpp
+	src/cnmea0183/hdm.cpp
+	src/cnmea0183/gll.hpp
+	src/cnmea0183/gll.cpp
+	src/cnmea0183/vtg.hpp
+	src/cnmea0183/vtg.cpp
+	src/cnmea0183/gga.hpp
+	src/cnmea0183/gga.cpp
+	src/cnmea0183/gsv.hpp
+	src/cnmea0183/gsv.cpp
+        src/cnmea0183/dbt.cpp
+        src/cnmea0183/dbt.hpp
+        src/cnmea0183/dpt.cpp
+        src/cnmea0183/dpt.hpp
+        src/cnmea0183/mtw.cpp
+        src/cnmea0183/mtw.hpp
+        src/cnmea0183/mwv.cpp
+        src/cnmea0183/mwv.hpp
+        src/cnmea0183/vhw.hpp
+        src/cnmea0183/vhw.cpp
+        src/cnmea0183/vwr.cpp
+        src/cnmea0183/vwr.hpp
+        src/cnmea0183/zda.cpp
+        src/cnmea0183/zda.hpp
+	src/cnmea0183/rsa.hpp
+	src/cnmea0183/rsa.cpp
+	src/cnmea0183/SatInfo.h
+        src/cnmea0183/mwd.cpp
+        src/cnmea0183/mwd.hpp
+        src/cnmea0183/vwt.cpp
+        src/cnmea0183/vwt.hpp
+            
+
+	)
+
+INCLUDE_DIRECTORIES(src/cnmea0183)
+
+ADD_LIBRARY(${PACKAGE_NAME} SHARED ${SRC_CONNECTOR} ${SRC_WXCTB} ${SRC_WXCTB_PLATFORM} ${SRC_NMEA0183})
 
 #TARGET_LINK_LIBRARIES(${PACKAGE_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/wxctb/lib/wxctb-0.9.lib)
 

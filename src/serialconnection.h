@@ -73,8 +73,8 @@ typedef enum
 typedef enum
 {
     NMEA0183 = 0,
-    SEATALK = 1,
-    NMEA2000 = 2
+    SEATALK = 2,
+    NMEA2000 = 1
 } DataProtocol;
 
 typedef enum
@@ -95,7 +95,7 @@ typedef enum
     NoEOS = 4
 } EOSType;
 
-static const char * EOSVals[5] = { "\r\n", "\n", "\r", "\n\r", "" };
+
 
 
 //----------------------------------------------------------------------------------------------------------
@@ -209,19 +209,26 @@ public:
     wxArrayString   InputFilterList;
     ListType        InputFilterType;
     void            SetEos(wxString eos) { m_EOS = eos; };
+	DataProtocol	Protocol ;
 
     void            SendNMEAMessage(wxString &message, wxString &source);
-    void            PushBuffer(wxString buf);
+    virtual void    PushBuffer(const char * b, unsigned int l);
     int             SentenceBoundary();
     wxString        GetPortName() { return m_portName; };
+	//GA
+	wxString        m_buffer;
+	wxString        m_EOS;
+	wxString        m_portName;
+	bool            FilterInput(wxString &message, wxString &source);
+	  ConnectionHandler *m_pHandler;
 private:
     bool            FilterOutput(wxString &message, wxString &source);
-    bool            FilterInput(wxString &message, wxString &source);
+   
     
-    wxString        m_portName;
-    wxString        m_buffer;
-    wxString        m_EOS;
-    ConnectionHandler *m_pHandler;
+  
+   
+    
+   
 };
 
 #endif

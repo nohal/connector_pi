@@ -37,6 +37,12 @@ class connector_pi;
 class ConnectionParams;
 class SentenceListDlgImpl;
 
+typedef enum
+{
+    FROMSELECT = 0,
+    FROMADD = 1,
+} FromLastUsrAction;
+
 class ConnectorSourceDlgImpl : public ConnectorSourceDlg 
 {
 public:
@@ -77,6 +83,7 @@ private:
     void SetFormToNet();
     bool SaveConnectionParams();
     bool params_saved;
+	FromLastUsrAction m_lastUsrAct;
 };
 
 class SentenceListDlgImpl : public SentenceListDlg 

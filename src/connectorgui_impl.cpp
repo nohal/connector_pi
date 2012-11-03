@@ -169,17 +169,20 @@ void ConnectorSourceDlgImpl::SetConnectionParams(ConnectionParams *cp)
 
 void ConnectorSourceDlgImpl::OnSelectDatasource( wxListEvent& event )
 {
-    SetConnectionParams(m_pPlugin->m_pConnectionParams->Item(event.GetIndex()));
+    m_lastUsrAct = FROMSELECT;
+	SetConnectionParams(m_pPlugin->m_pConnectionParams->Item(event.GetIndex()));
     m_buttonRemove->Enable();
     m_sdbSizerDlgButtonsApply->Enable();
+	 params_saved = false; //just to avoid test on each parameter if it has changed
     event.Skip();
 }
 
 void ConnectorSourceDlgImpl::OnAddClick( wxCommandEvent& event )
 {
-    ConnectionParams *cp = new ConnectionParams();
+    m_lastUsrAct= FROMADD;
+	ConnectionParams *cp = new ConnectionParams();
     SetConnectionParams( cp );
-    SetFormToSerial();
+   // SetFormToSerial();
     params_saved = false;
 
     long itemIndex = -1;
@@ -253,7 +256,7 @@ bool ConnectorSourceDlgImpl::SaveConnectionParams()
     else
         m_pConnectionParams->OutputSentenceListType = BLACKLIST;
     m_pConnectionParams->Port = m_comboPort->GetStringSelection();
-    m_pConnectionParams->Protocol = NMEA0183;
+    m_pConnectionParams->Protocol = (DataProtocol)m_choiceSerialProtocol->GetSelection() ;
     m_pConnectionParams->Wordlen = wxAtoi(m_choiceDataBits->GetStringSelection());
     m_pConnectionParams->Parity = (ParityType)m_choiceParity->GetSelection();
     m_pConnectionParams->Stopbits = m_choiceStopBits->GetSelection() + 1;
@@ -267,9 +270,10 @@ void ConnectorSourceDlgImpl::OnOkClick( wxCommandEvent& event )
 {
     if(SaveConnectionParams() && !params_saved)
     {
-        m_pPlugin->m_pConnectionParams->Add(m_pConnectionParams);
+        if (m_lastUsrAct == FROMADD)m_pPlugin->m_pConnectionParams->Add(m_pConnectionParams);
         params_saved = true;
     }
+	m_pPlugin->connectionhandler->CreateConnections(m_pPlugin->m_pConnectionParams);
     event.Skip();
 }
 
@@ -278,13 +282,15 @@ void ConnectorSourceDlgImpl::OnApplyClick( wxCommandEvent& event )
     long itemIndex = m_lcSources->GetNextItem( -1, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED );
     if(SaveConnectionParams() && !params_saved)
     {
-        m_pPlugin->m_pConnectionParams->Add(m_pConnectionParams);
+        if (m_lastUsrAct == FROMADD)m_pPlugin->m_pConnectionParams->Add(m_pConnectionParams);
         params_saved = true;
         itemIndex = m_pPlugin->m_pConnectionParams->Count() - 1;
     }
     FillSourceList();
     m_lcSources->SetItemState(itemIndex, wxLIST_STATE_SELECTED, wxLIST_STATE_SELECTED);
-    event.Skip();
+    
+	m_pPlugin->connectionhandler->CreateConnections(m_pPlugin->m_pConnectionParams);
+	event.Skip();
 }
 
 void ConnectorSourceDlgImpl::OnBtnIStcs( wxCommandEvent& event )
@@ -524,7 +530,7 @@ wxArrayString ConnectorSourceDlgImpl::ScanPorts()
     CEnumerateSerial::UsingGetDefaultCommConfig(detectedports);
 #endif
 
-    for(int i=0; i < ( sizeof( ports ) >> 2 ); i++, progress.Update( i ) ) {
+    for(unsigned int i=0; i < ( sizeof( ports ) >> 2 ); i++, progress.Update( i ) ) {
 #if !defined (__WIN32__)
         if(com.Open(ports[i]) < 0) {
             continue;

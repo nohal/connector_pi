@@ -90,7 +90,8 @@ public:
     void SetAISSentence(wxString &sentence, wxString &source);
 
     void SendSentenceToCore(wxString &msg);
-
+	ConnectionHandler *connectionhandler;
+	
 private:
     wxFileConfig     *m_pconfig;
     bool              LoadConfig(void);
@@ -98,7 +99,7 @@ private:
 
     ConnectorSourceDlgImpl *m_pConnectorDialog;
 
-    ConnectionHandler *connectionhandler;
+    
 };
 
 #endif
