@@ -69,6 +69,9 @@ private:
 	void received(const char *data, unsigned int len);
 	wxString m_sbuffer;
     unsigned long vent ;
+	float HeadingMag;
+	float Cog;
+	float Sow;
 };
 
 #endif

@@ -189,7 +189,7 @@ class CNMEA0183
       GXA Gxa;
 */
       HDM Hdm;
-      cHDG cHdg;
+      HDG Hdg;
       HDT Hdt;
 /*
       HSC Hsc;

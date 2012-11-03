@@ -40,7 +40,7 @@ void StkSerialConnection::stk(unsigned char tre[255])
 switch (tre[0])
 {
 	
-		case 0x27 :
+		case 0x27 :  //Water temp
 		t =  (float)((tre[3]*256 + tre[2])-100)/10 ;
 			cm_nmea.Mtw.Empty();
 			cm_nmea.Mtw.Temperature= t;
@@ -76,26 +76,45 @@ switch (tre[0])
 			m_buffer.Append(snt.Sentence);
 		break;
 		
+		case 0x84 :
+		HeadingMag =   ((tre[1]>>4) & 0x3)* 90 + (tre[2] & 0x3F)* 2 ;
+		
+		break;
+		
+		case 0x53 :
+		Cog =   ((tre[1]>>4) & 0x3)* 90 + (tre[2] & 0x3F)* 2 + (float)((tre[1])>>4 & 0xc)/ 2;
+		break;
+		case 0x20 :
+		Sow =  ((float)tre[3]*256 +(float) tre[2])/10 ;
+		cm_nmea.Vhw.DegreesTrue       = Cog;
+        cm_nmea.Vhw.DegreesMagnetic   = HeadingMag;
+        cm_nmea.Vhw.Knots             = Sow;
+        cm_nmea.Vhw.KilometersPerHour = Sow *1.852;
+		cm_nmea.Vhw.Write(snt);
+		m_buffer.Append(snt.Sentence);
+		break;
+		
+		
 		case 0x99 : // hdg
 		r= (int)(signed char)tre[2];
-		cm_nmea.cHdg.Empty();
+		cm_nmea.Hdg.Empty();
 		if (r>0)
 		{
-				cm_nmea.cHdg.MagneticVariationDegrees = abs(r)  ;
-				cm_nmea.cHdg.MagneticVariationDirection = West  ;
+				cm_nmea.Hdg.MagneticVariationDegrees = abs(r)  ;
+				cm_nmea.Hdg.MagneticVariationDirection = West  ;
 			}
 		else
 			{
-				cm_nmea.cHdg.MagneticVariationDegrees = abs(r)  ;
-				cm_nmea.cHdg.MagneticVariationDirection = East  ;
+				cm_nmea.Hdg.MagneticVariationDegrees = abs(r)  ;
+				cm_nmea.Hdg.MagneticVariationDirection = East  ;
 			}
 		break;
 		case 0x9c : // hdg
-		t =   ((tre[1]>>4) & 0x3)* 90 + (tre[2] & 0x3F)* 2 ;
-		cm_nmea.cHdg.MagneticSensorHeadingDegrees = t  ;
-		cm_nmea.cHdg.MagneticDeviationDegrees  = 0  ;
-		cm_nmea.cHdg.MagneticDeviationDirection = East  ;
-		cm_nmea.cHdg.Write(snt);
+		HeadingMag =   ((tre[1]>>4) & 0x3)* 90 + (tre[2] & 0x3F)* 2 ;
+		cm_nmea.Hdg.MagneticSensorHeadingDegrees = HeadingMag  ;
+		cm_nmea.Hdg.MagneticDeviationDegrees  = 0  ;
+		cm_nmea.Hdg.MagneticDeviationDirection = East  ;
+		cm_nmea.Hdg.Write(snt);
 		m_buffer.Append(snt.Sentence);
 		break;
 		

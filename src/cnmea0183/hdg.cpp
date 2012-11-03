@@ -40,19 +40,19 @@
 ** You can use it any way you like.
 */
 
-cHDG::cHDG()
+HDG::HDG()
 {
    Mnemonic = _T("HDG");
    Empty();
 }
 
-cHDG::~cHDG()
+HDG::~HDG()
 {
    Mnemonic.Empty();
    Empty();
 }
 
-void cHDG::Empty( void )
+void HDG::Empty( void )
 {
    MagneticSensorHeadingDegrees = 0.0;
    MagneticDeviationDegrees     = 0.0;
@@ -61,7 +61,7 @@ void cHDG::Empty( void )
    MagneticVariationDirection   = EW_Unknown;
 }
 
-bool cHDG::Parse( const SENTENCE& sentence )
+bool HDG::Parse( const SENTENCE& sentence )
 {
    /*
    ** HDG - Heading - Deviation & Variation
@@ -98,7 +98,7 @@ bool cHDG::Parse( const SENTENCE& sentence )
    return( TRUE );
 }
 
-bool cHDG::Write( SENTENCE& sentence )
+bool HDG::Write( SENTENCE& sentence )
 {
    /*
    ** Let the parent do its thing
@@ -117,7 +117,7 @@ bool cHDG::Write( SENTENCE& sentence )
    return( TRUE );
 }
 
-const cHDG& cHDG::operator = ( const cHDG& source )
+const HDG& HDG::operator = ( const HDG& source )
 {
    MagneticSensorHeadingDegrees = source.MagneticSensorHeadingDegrees;
    MagneticDeviationDegrees     = source.MagneticDeviationDegrees;
